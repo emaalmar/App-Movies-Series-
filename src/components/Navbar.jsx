@@ -1,9 +1,10 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon, TvIcon } from '@heroicons/react/24/outline'
+import { Link } from 'react-router-dom';
 
 const navigation = [
-    { name: 'Peliculas', href: '#', current: true },
-    { name: 'Series', href: '#', current: false },
+    { name: 'Peliculas', href: '/movies', current: false },
+    { name: 'Series', href: '/tvshows', current: false },
 
 ]
 
@@ -30,14 +31,16 @@ const Navbar = () => {
                     </div>
                     <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                         <div className="flex shrink-0 items-center">
-                            <TvIcon className="mx-auto h-8 w-auto text-gray-200" aria-label="Movies and TV Shows" />
+                            <Link to='/home'>
+                                <TvIcon className="mx-auto h-8 w-auto text-gray-200" aria-label="Movies and TV Shows" />
+                            </Link>
                         </div>
                         <div className="hidden sm:ml-6 sm:block">
                             <div className="flex space-x-4">
                                 {navigation.map((item) => (
-                                    <a
+                                    <Link
                                         key={item.name}
-                                        href={item.href}
+                                        to={item.href}
                                         aria-current={item.current ? 'page' : undefined}
                                         className={classNames(
                                             item.current
@@ -47,7 +50,7 @@ const Navbar = () => {
                                         )}
                                     >
                                         {item.name}
-                                    </a>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
@@ -95,12 +98,13 @@ const Navbar = () => {
                                     </a>
                                 </MenuItem>
                                 <MenuItem>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5"
-                                    >
-                                        Sign out
-                                    </a>
+                                    <Link to='/'>
+                                        <a
+                                            className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5"
+                                        >
+                                            Sign out
+                                        </a>
+                                    </Link>
                                 </MenuItem>
                             </MenuItems>
                         </Menu>

@@ -1,7 +1,7 @@
 // Carousale.jsx
 import React, { useRef } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
-
+import { Link } from 'react-router-dom';
 export const Carousel = ({ name, images }) => {
     const scrollRef = useRef(null);
 
@@ -15,7 +15,9 @@ export const Carousel = ({ name, images }) => {
 
     return (
         <div>
-            <h2 className="text-lg font-bold pl-6 pt-6">{name}</h2>
+            <h2 className="text-lg font-bold pl-6 pt-6">
+                    {name}
+            </h2>
             <div className="relative">
                 <button
                     onClick={scrollLeft}

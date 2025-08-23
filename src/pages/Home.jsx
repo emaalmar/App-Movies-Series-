@@ -1,8 +1,11 @@
-import { MediaCarousel } from "./MediaCarousel";
+import Navbar from "../components/Navbar";
+import { MediaCarousel } from "../components/MediaCarousel";
 
 export const Home = () => {
     return (
-        <>
+    <>
+            <Navbar />
+
             <MediaCarousel
                 name="Películas"
                 apiUrl="https://api.themoviedb.org/3/discover/movie"

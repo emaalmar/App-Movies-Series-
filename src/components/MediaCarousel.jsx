@@ -1,10 +1,11 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Carousel } from './Carousale';
+import { Carousel } from './Carousel';
+import { Link } from 'react-router-dom';
 
 export const MediaCarousel = ({ name, apiUrl, accessToken }) => {
     const [items, setItems] = useState([]);
-
+    
     useEffect(() => {
         const getItems = async () => {
             const response = await axios.get(apiUrl, {
@@ -18,6 +19,5 @@ export const MediaCarousel = ({ name, apiUrl, accessToken }) => {
     }, [apiUrl, accessToken]);
 
     const images = items.map(item => `https://image.tmdb.org/t/p/w500${item.poster_path}`);
-
     return <Carousel name={name} images={images} />;
 };
