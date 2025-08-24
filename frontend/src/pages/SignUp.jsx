@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { AlertSucces } from '../components/AlertSuccess.jsx'
 import z from 'zod'
 import { api } from "../services/api.js"
+import { useUserStore } from '../store/userStore.js'
 
 const schema = z.object({
   fullName: z.string()
@@ -35,6 +36,7 @@ export const SignUp = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrorMsg("");
   };
+  const setToken = useUserStore(state => state.setToken);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -43,10 +45,9 @@ export const SignUp = () => {
       setErrorMsg("");
 
       const { data } = await api.post('/auth/signup', formData);
-      localStorage.setItem('token', data.token);
-
-      setShowAlert(true)
-        navigate('/home')
+      setToken(data.token);
+      setShowAlert(true);
+      navigate('/home');
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message || 'Error desconocido';
       setErrorMsg(msg);

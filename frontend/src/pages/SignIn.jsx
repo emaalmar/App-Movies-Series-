@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { TvIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { api } from '../services/api.js';
+import { useUserStore } from '../store/userStore';
 import z from 'zod'
 
 
@@ -17,12 +18,12 @@ export const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrorMsg("");
   };
+
+  const setToken = useUserStore(state => state.setToken);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -30,7 +31,8 @@ export const SignIn = () => {
       setLoading(true);
       setErrorMsg("");
 
-      await api.post('/auth/signin', formData);
+      const { data } = await api.post('/auth/signin', formData);
+      setToken(data.token);
       setFormData({ email: '', password: '' });
       navigate("/home");
     } catch (err) {

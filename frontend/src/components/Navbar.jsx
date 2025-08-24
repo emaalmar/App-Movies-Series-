@@ -1,6 +1,8 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon, TvIcon } from '@heroicons/react/24/outline'
 import { Link, NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useUserStore } from '../store/userStore';
 
 const navigation = [
     { name: 'Peliculas', to: '/movies' },
@@ -13,6 +15,13 @@ function classNames(...classes) {
 }
 
 export const Navbar = () => {
+    const logout = useUserStore(state => state.logout);
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    }
     return (
         <Disclosure
             as="nav"
@@ -86,7 +95,8 @@ export const Navbar = () => {
                                 <MenuItem as={Link} to="/settings" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5">
                                     Settings
                                 </MenuItem>
-                                <MenuItem as={Link} to="/" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5">
+
+                                <MenuItem as="button" onClick={handleLogout} className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5">
                                     Sign out
                                 </MenuItem>
                             </MenuItems>
