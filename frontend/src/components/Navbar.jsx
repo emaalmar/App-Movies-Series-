@@ -1,10 +1,12 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon, TvIcon } from '@heroicons/react/24/outline'
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useUserStore } from '../store/userStore';
 
 const navigation = [
-    { name: 'Peliculas', href: '/movies', current: false },
-    { name: 'Series', href: '/tvshows', current: false },
+    { name: 'Peliculas', to: '/movies' },
+    { name: 'Series', to: '/tvshows' },
 
 ]
 
@@ -12,7 +14,14 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-const Navbar = () => {
+export const Navbar = () => {
+    const logout = useUserStore(state => state.logout);
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    }
     return (
         <Disclosure
             as="nav"
@@ -31,26 +40,25 @@ const Navbar = () => {
                     </div>
                     <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                         <div className="flex shrink-0 items-center">
-                            <Link to='/home'>
-                                <TvIcon className="mx-auto h-8 w-auto text-gray-200" aria-label="Movies and TV Shows" />
+                            <Link to="/home" aria-label="Movies and TV Shows">
+                                <TvIcon className="mx-auto h-8 w-auto text-gray-200" />
                             </Link>
                         </div>
                         <div className="hidden sm:ml-6 sm:block">
                             <div className="flex space-x-4">
                                 {navigation.map((item) => (
-                                    <Link
+                                    <NavLink
                                         key={item.name}
-                                        to={item.href}
-                                        aria-current={item.current ? 'page' : undefined}
-                                        className={classNames(
-                                            item.current
-                                                ? 'bg-gray-900 text-white dark:bg-gray-950/50'
-                                                : 'text-gray-300 hover:bg-white/5 hover:text-white',
-                                            'rounded-md px-3 py-2 text-sm font-medium',
-                                        )}
+                                        to={item.to}
+                                        className={({ isActive }) =>
+                                            classNames(
+                                                isActive ? 'bg-gray-900 text-white dark:bg-gray-950/50' : 'text-gray-300 hover:bg-white/5 hover:text-white',
+                                                'rounded-md px-3 py-2 text-sm font-medium'
+                                            )
+                                        }
                                     >
                                         {item.name}
-                                    </Link>
+                                    </NavLink>
                                 ))}
                             </div>
                         </div>
@@ -81,30 +89,15 @@ const Navbar = () => {
                                 transition
                                 className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg outline outline-black/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in dark:bg-gray-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10"
                             >
-                                <MenuItem>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5"
-                                    >
-                                        Your profile
-                                    </a>
+                                <MenuItem as={Link} to="/profile" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5">
+                                    Your profile
                                 </MenuItem>
-                                <MenuItem>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5"
-                                    >
-                                        Settings
-                                    </a>
+                                <MenuItem as={Link} to="/settings" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5">
+                                    Settings
                                 </MenuItem>
-                                <MenuItem>
-                                    <Link to='/'>
-                                        <a
-                                            className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5"
-                                        >
-                                            Sign out
-                                        </a>
-                                    </Link>
+
+                                <MenuItem as="button" onClick={handleLogout} className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5">
+                                    Sign out
                                 </MenuItem>
                             </MenuItems>
                         </Menu>
@@ -117,23 +110,20 @@ const Navbar = () => {
                     {navigation.map((item) => (
                         <DisclosureButton
                             key={item.name}
-                            as="a"
-                            href={item.href}
-                            aria-current={item.current ? 'page' : undefined}
-                            className={classNames(
-                                item.current
-                                    ? 'bg-gray-900 text-red dark:bg-gray-950/50'
-                                    : 'text-gray-300 hover:bg-white/5 hover:text-white',
-                                'block rounded-md px-3 py-2 text-base font-medium',
-                            )}
-                        >
-                            {item.name}
+                            as={NavLink}
+                            to={item.to}
+                            className={({ isActive }) =>
+                                classNames(
+                                    isActive ? 'bg-gray-900 text-white dark:bg-gray-950/50' : 'text-gray-300 hover:bg-white/5 hover:text-white',
+                                    'block rounded-md px-3 py-2 text-base font-medium'
+                                )
+                            }
+                                >
+                                { item.name }
                         </DisclosureButton>
                     ))}
-                </div>
-            </DisclosurePanel>
-        </Disclosure>
+            </div>
+        </DisclosurePanel>
+        </Disclosure >
     )
 }
-
-export default Navbar

@@ -1,10 +1,8 @@
-import Navbar from "../components/Navbar";
 import { MediaCarousel } from "../components/MediaCarousel";
 
 export const Home = () => {
     return (
     <>
-            <Navbar />
 
             <MediaCarousel
                 name="Películas"
