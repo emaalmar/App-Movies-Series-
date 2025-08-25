@@ -3,13 +3,8 @@ import { TvIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { api } from '../services/api.js';
 import { useUserStore } from '../store/userStore';
-import z from 'zod'
+import { AlertError } from '../components/AlertError.jsx'
 
-
-const schema = z.object({
-  email: z.string().email("Correo electrónico inválido"),
-  password: z.string().min(6, "La contraseña debe tener menos de 100 caracteres"),
-})
 
 export const SignIn = () => {
 
@@ -97,9 +92,9 @@ export const SignIn = () => {
                 />
               </div>
             </div>
-
+            <AlertError message={errorMsg} />
             <div>
-              {errorMsg && <p className="text-sm text-red-600 text-center">{errorMsg}</p>}
+
               <button
                 type="submit"
                 disabled={loading}

@@ -1,7 +1,5 @@
-// Carousale.jsx
-import React, { useRef } from 'react';
+import  { useRef } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
 
 
 export const Carousel = ({ name, images }) => {

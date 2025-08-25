@@ -10,22 +10,7 @@ export const AlertSucces = ({ title, text, icon, onClose }) => {
     }).then(() => {
       if (onClose) onClose();
     });
-  }, []);
+  }, [icon, onClose, text, title]);
 
   return null;
 }
-
-
-// export const AlertSucces = ({ title, text, icon, onClose }) => {
-//   useEffect(() => {
-//     Swal.fire({
-//       title: title,
-//       text: text,
-//       icon: icon
-//     }).then(() => {
-//       if (onClose) onClose();
-//     });
-//   }, []);
-
-//   return null;
-// }

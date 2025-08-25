@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import User from '../models/User.model.js'
+import jwt from 'jsonwebtoken'
 
 const signupSchema = z.object({
     fullName: z.string().trim().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
@@ -18,9 +19,11 @@ export async function signup(req, res) {
         if (exists) return res.status(409).json({ message: 'El correo ya está registrado' })
 
         const passwordHash = await bcrypt.hash(password, 10)
-        await User.create({ fullName, email, passwordHash })
+        const user = await User.create({ fullName, email, passwordHash })
 
-        return res.status(201).json({ message: 'Usuario creado' })
+        const token = jwt.sign({ sub: user._id, email: user.email }, process.env.SECRET_KEY, { expiresIn: '7d' })
+
+        return res.status(201).json({ message: 'Usuario creado', token })
     } catch (err) {
         // Si es error de validación Zod
         if (err?.name === 'ZodError' && err?.issues) {
@@ -39,7 +42,7 @@ export async function signup(req, res) {
 
 const signinSchema = z.object({
     email: z.string().email("Correo electrónico inválido"),
-    password: z.string().min(6, "La contraseña es requerida'")
+    password: z.string().min(6,"Contraseña requerida")
 });
 
 export async function signin(req, res) {
@@ -58,11 +61,8 @@ export async function signin(req, res) {
         const isMatch = await bcrypt.compare(password, user.passwordHash)
         if (!isMatch) return res.status(401).json({ message: 'Usuario o contraseña incorrectos' })
 
-        // Opcional: emitir JWT
-        // import jwt from 'jsonwebtoken'
-        // const token = jwt.sign({ sub: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' })
-        // return res.status(200).json({ message: 'Inicio de sesión exitoso', token })
-        return res.status(200).json({ message: 'Inicio de sesión exitoso' })
+        const token = jwt.sign({ sub: user._id, email: user.email }, process.env.SECRET_KEY, { expiresIn: '7d' })
+        return res.status(200).json({ message: 'Inicio de sesión exitoso', token })
     } catch (err) {
         console.error(err)
         return res.status(500).json({ message: 'Error interno' })
