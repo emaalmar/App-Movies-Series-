@@ -10,7 +10,7 @@ const SignIn = lazy(() => import('../pages/SignIn').then(m => ({ default: m.Sign
 const Movies = lazy(() => import('../pages/Movies').then(m => ({ default: m.Movies })))
 const TvShows = lazy(() => import('../pages/TvShows').then(m => ({ default: m.TvShows })))
 const SignUp = lazy(() => import('../pages/SignUp').then(m => ({ default: m.SignUp })))
-
+const Profile = lazy(() => import('../pages/Profile').then(m => ({ default: m.Profile })))
 
 export const AppRoutes = () => {
     return (
@@ -21,6 +21,7 @@ export const AppRoutes = () => {
                         <Route path="home" element={<Home />} />
                         <Route path="movies" element={<Movies />} />
                         <Route path="tvshows" element={<TvShows />} />
+                        <Route path="profile" element={<Profile />} />
                     </Route>
                 </Route>
 
