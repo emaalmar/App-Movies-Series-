@@ -1,0 +1,52 @@
+import { Router } from 'express';
+import { isValidObjectId } from 'mongoose';
+import { auth } from '../middleware/auth.js';
+
+import {
+    updateUser,
+    getUser,
+    deleteUser,
+    getUsers,
+    updateUserPassword,
+    getMe,
+    // updateMe //
+} from '../controllers/user.controller.js';
+
+const router = Router();
+
+/** Middleware reutilizable para mapear /me -> :id */
+const aliasMeToId = (req, res, next) => {
+    const userId = req.userId;
+    if (!userId || !isValidObjectId(userId)) {
+        return res.status(400).json({ message: 'Invalid user id in token' });
+    }
+    req.params.id = userId;
+    next();
+};
+
+/** Valida :id (solo aplica en rutas que tienen :id en el path) */
+router.param('id', (req, res, next, id) => {
+    if (!isValidObjectId(id)) {
+        return res.status(400).json({ message: 'Invalid id' });
+    }
+    next();
+});
+
+// --- Rutas “me” ---
+router.get('/me', auth, getMe);
+router.put('/me', auth, aliasMeToId, updateUser);
+router.put('/me/password', auth, aliasMeToId, updateUserPassword);
+router.delete('/me', auth, aliasMeToId, deleteUser);
+
+// --- Rutas admin/otros (por :id) ---
+router.get('/', auth, getUsers);
+
+router
+    .route('/:id')
+    .get(auth, getUser)
+    .put(auth, updateUser)
+    .delete(auth, deleteUser);
+
+router.put('/:id/password', auth, updateUserPassword);
+
+export default router;
