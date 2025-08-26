@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { TvIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { AlertSucces } from '../components/AlertSuccess.jsx'
+import { AlertSuccess } from '../components/AlertSuccess.jsx'
 import { api } from "../services/api.js"
 import { useUserStore } from '../store/userStore.js'
 import { InputForm } from '../components/InputForm.jsx'
@@ -41,7 +41,7 @@ export const SignUp = () => {
   return (
     <>
       {showAlert && (
-        <AlertSucces
+        <AlertSuccess
           title="Éxito"
           text="Tu cuenta fue creada correctamente"
           icon="success"
@@ -51,7 +51,7 @@ export const SignUp = () => {
 
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <TvIcon className="mx-auto h-15 w-auto text-black" aria-label="Movies and TV Shows" />
+          <TvIcon className="mx-auto h-16 w-auto text-black" aria-label="Movies and TV Shows" />
           <h2 className="mt-2 text-center text-2xl font-bold tracking-tight text-gray-900">
             Sign up to your account
           </h2>
@@ -72,7 +72,6 @@ export const SignUp = () => {
 
 
               <div>
-                <input type="hidden" autoComplete="email" />
                 <InputForm
                   fieldName="email"
                   displayLabel="Email"
@@ -85,7 +84,6 @@ export const SignUp = () => {
               </div>
 
               <div>
-                  <input type="hidden" autoComplete="new-password" />
                 <InputForm
                   fieldName="password"
                   displayLabel="Password"
@@ -103,7 +101,7 @@ export const SignUp = () => {
               </div> */}
             </div>
 
-            <AlertError message={errorMsg} />
+            {errorMsg && <AlertError message={errorMsg} />}
 
             <button
               type="submit"

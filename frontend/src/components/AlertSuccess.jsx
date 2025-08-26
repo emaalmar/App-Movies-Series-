@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Swal from "sweetalert2";
 
-export const AlertSucces = ({ title, text, icon, onClose }) => {
+export const AlertSuccess = ({ title, text, icon, onClose }) => {
   useEffect(() => {
     Swal.fire({
       title: title,
