@@ -6,6 +6,7 @@ import { api } from "../services/api.js"
 import { useUserStore } from '../store/userStore.js'
 import { InputForm } from '../components/InputForm.jsx'
 import { AlertError } from '../components/AlertError.jsx'
+import { Button } from '../components/Button.jsx'
 
 export const SignUp = () => {
 
@@ -103,13 +104,14 @@ export const SignUp = () => {
 
             {errorMsg && <AlertError message={errorMsg} />}
 
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              loading={loading}
+              loadingText="Creating..."
             >
-              {loading ? 'Creating...' : 'Create Account'}
-            </button>
+              Create Account
+            </Button>
 
             <p className="mt-10 text-center text-sm text-gray-500">
               Already a member?{' '}

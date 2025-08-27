@@ -5,6 +5,7 @@ import { api } from '../services/api.js';
 import { useUserStore } from '../store/userStore';
 import { AlertError } from '../components/AlertError.jsx'
 import { InputForm } from '../components/InputForm.jsx';
+import { Button } from '../components/Button.jsx';
 
 
 export const SignIn = () => {
@@ -83,13 +84,7 @@ export const SignIn = () => {
             </div>
             <AlertError message={errorMsg} />
             <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                {loading ? 'Signing in...' : 'Sign in'}
-              </button>
+                <Button type="submit" loading={loading} loadingText='Creating...'> Create Account </Button>
             </div>
 
 
