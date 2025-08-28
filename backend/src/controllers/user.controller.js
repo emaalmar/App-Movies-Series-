@@ -3,52 +3,6 @@ import User from '../models/User.model.js';
 import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 
-
-export async function getMe(req, res) {
-    try {
-        const id = req.userId;
-        const user = await User.findById(id)
-        if(!user) return res.status(404).json({message: 'User not found'})
-        return res.json({message: 'User retrieved successfully', user})
-    } catch (error) {
-        console.error('getMe error:', error);
-        return res.status(500).json({
-            message: 'Internal server error',
-            error: error.message
-        });
-    }
-}
-
-// export async function updateMe(req, res) {
-//     try {
-//         const id = req.userID;
-//         const updateData = req.body;
-
-//         const validationResult = userSchema.safeParse(updateData);
-//         if (!validationResult.success) {
-//             return res.status(400).json({
-//                 message: 'Validation failed',
-//                 errors: validationResult.error.issues
-//             });
-//         }
-
-//         const user = await User.findByIdAndUpdate(
-//             id,
-//             { $set: validationResult.data },
-//             { new: true }
-//         );
-
-//         if (!user) {
-//             return res.status(404).json({ message: 'User not found' });
-//         }
-
-//         return res.json({ message: 'User updated successfully', user });
-//     } catch (error) {
-//         console.error(error);
-//         return res.status(500).json({ message: 'Error updating user' });
-//     }
-// }
-
 /**
  * Retrieves a paginated list of users.
  */
@@ -95,33 +49,6 @@ export async function getUser(req, res) {
 /**
  * Updates a user's password after verifying the current password.
  */
-export async function updateUserPassword(req, res) {
-    try {
-        const { id } = req.params;
-        const { currentPassword, newPassword } = req.body;
-
-        const user = await User.findById(id);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Current password is incorrect' });
-        }
-
-        user.passwordHash = await bcrypt.hash(newPassword, 10);
-        await user.save();
-
-        return res.json({ message: 'Password updated successfully' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error updating password' });
-    }
-}
-
-
-
 
 const userSchema = z.object({
     fullName: z.string().min(2),
@@ -135,10 +62,23 @@ export async function updateUser(req, res) {
         const { id } = req.params;
         const updateData = req.body;
 
+        // Obtener el usuario autenticado
+        const authenticatedUserId = req.userId;
+        // Buscar el usuario que se va a modificar
+        const userToUpdate = await User.findById(id);
+        if (!userToUpdate) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Permitir solo si el usuario autenticado es el dueño o es admin
+        if (authenticatedUserId !== id && userToUpdate.role !== 'admin') {
+            return res.status(403).json({ message: 'No tienes permiso para modificar este usuario' });
+        }
+
         const validationResult = userSchema.safeParse(updateData);
 
         if (!validationResult.success) {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 message: 'Validation failed',
                 errors: validationResult.error.issues
             });
@@ -149,10 +89,6 @@ export async function updateUser(req, res) {
             { $set: validationResult.data },
             { new: true }
         );
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
 
         return res.json({ message: 'User updated successfully', user });
     } catch (error) {

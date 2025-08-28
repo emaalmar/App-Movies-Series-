@@ -1,6 +1,6 @@
 import express from "express"
 import { CONFIG } from "./config/config.js"
-import { securityMiddleware } from "./middleware/security.js"
+import { securityMiddleware } from "./middlewares/security.js"
 import { connectDB } from "./database/mongoose.js"
 import authRoutes from "./routes/auth.route.js"
 import userRoutes from "./routes/user.route.js"

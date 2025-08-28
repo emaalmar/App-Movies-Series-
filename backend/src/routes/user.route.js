@@ -1,16 +1,15 @@
 import { Router } from 'express';
 import { isValidObjectId } from 'mongoose';
-import { auth } from '../middleware/auth.js';
-
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 import {
     updateUser,
     getUser,
     deleteUser,
     getUsers,
-    updateUserPassword,
-    getMe,
     // updateMe //
 } from '../controllers/user.controller.js';
+
+import { profile } from '../controllers/auth.controller.js';
 
 const router = Router();
 
@@ -33,20 +32,17 @@ router.param('id', (req, res, next, id) => {
 });
 
 // --- Rutas “me” ---
-router.get('/me', auth, getMe);
-router.put('/me', auth, aliasMeToId, updateUser);
-router.put('/me/password', auth, aliasMeToId, updateUserPassword);
-router.delete('/me', auth, aliasMeToId, deleteUser);
+router.get('/me', authMiddleware, profile);
+router.put('/me', authMiddleware, aliasMeToId, updateUser);
+router.delete('/me', authMiddleware, aliasMeToId, deleteUser);
 
 // --- Rutas admin/otros (por :id) ---
-router.get('/', auth, getUsers);
+router.get('/', authMiddleware, getUsers);
 
 router
     .route('/:id')
-    .get(auth, getUser)
-    .put(auth, updateUser)
-    .delete(auth, deleteUser);
-
-router.put('/:id/password', auth, updateUserPassword);
+    .get(authMiddleware, getUser)
+    .put(authMiddleware, updateUser)
+    .delete(authMiddleware, deleteUser);
 
 export default router;

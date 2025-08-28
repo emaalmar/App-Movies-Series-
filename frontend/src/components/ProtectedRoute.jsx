@@ -1,15 +1,15 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { useUserStore } from '../store/userStore';
+// import { Navigate, Outlet } from 'react-router-dom';
+// import { useUserStore } from '../store/userStore';
 
-function ProtectedRoute({ children, redirectTo = '/' }) {
-    const token = useUserStore(state => state.token);
-    const isAuthenticated = !!token;
+// function ProtectedRoute({ children, redirectTo = '/' }) {
+//     const token = useUserStore(state => state.token);
+//     const isAuthenticated = !!token;
 
-    if (!isAuthenticated) {
-        return <Navigate to={redirectTo} />;
-    }
+//     if (!isAuthenticated) {
+//         return <Navigate to={redirectTo} />;
+//     }
 
-    return children ? children : <Outlet />;
-}
+//     return children ? children : <Outlet />;
+// }
 
-export default ProtectedRoute;
+// export default ProtectedRoute;

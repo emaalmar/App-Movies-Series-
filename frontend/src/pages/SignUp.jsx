@@ -3,13 +3,11 @@ import { TvIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { AlertSuccess } from '../components/AlertSuccess.jsx'
 import { api } from "../services/api.js"
-import { useUserStore } from '../store/userStore.js'
 import { InputForm } from '../components/InputForm.jsx'
 import { AlertError } from '../components/AlertError.jsx'
 import { Button } from '../components/Button.jsx'
 
 export const SignUp = () => {
-
   const [showAlert, setShowAlert] = useState(false);
   const [formData, setFormData] = useState({ fullName: "", email: "", password: "" });
   const [errorMsg, setErrorMsg] = useState('');
@@ -20,25 +18,26 @@ export const SignUp = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrorMsg("");
   };
-  const setToken = useUserStore(state => state.setToken);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       setLoading(true);
       setErrorMsg("");
-
       const { data } = await api.post('/auth/signup', formData);
-      setToken(data.token);
       setShowAlert(true);
-      navigate('/home');
+      setTimeout(() => {
+        setShowAlert(false);
+        navigate('/home');
+      }, 1500);
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message || 'Error desconocido';
       setErrorMsg(msg);
     } finally {
       setLoading(false);
     }
-  }
+  };
+
   return (
     <>
       {showAlert && (
@@ -46,7 +45,10 @@ export const SignUp = () => {
           title="Éxito"
           text="Tu cuenta fue creada correctamente"
           icon="success"
-          onClose={() => setShowAlert(false)}
+          onClose={() => {
+            setShowAlert(false);
+            navigate('/home');
+          }}
         />
       )}
 
@@ -60,47 +62,36 @@ export const SignUp = () => {
 
         <div className="mt-10 text-left sm:mx-auto sm:w-full sm:max-w-sm">
           <form id="sign-up-form" onSubmit={handleSubmit} className="space-y-5">
-            <div className="">
-              <InputForm
-                fieldName="fullName"
-                displayLabel="Name"
-                inputType='text'
-                required={true}
-                placeholder="Enter your name"
-                handleOnChange={handleChange}
-                value={formData.fullName}
-              />
-
-
-              <div>
-                <InputForm
-                  fieldName="email"
-                  displayLabel="Email"
-                  inputType='email'
-                  placeholder="Enter your email"
-                  handleOnChange={handleChange}
-                  value={formData.email}
-                  required={true}
-                />
-              </div>
-
-              <div>
-                <InputForm
-                  fieldName="password"
-                  displayLabel="Password"
-                  inputType='password'
-                  placeholder="Enter your password"
-                  handleOnChange={handleChange}
-                  value={formData.password}
-                  required={true}
-                />
-              </div>
-              {/* <div className="mt-2 text-xs text-left">
-                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                  Forgot password?
-                </a>
-              </div> */}
-            </div>
+            <InputForm
+              fieldName="fullName"
+              displayLabel="Name"
+              inputType='text'
+              required={true}
+              placeholder="Enter your name"
+              handleOnChange={handleChange}
+              value={formData.fullName}
+              autoComplete="name"
+            />
+            <InputForm
+              fieldName="email"
+              displayLabel="Email"
+              inputType='email'
+              placeholder="Enter your email"
+              handleOnChange={handleChange}
+              value={formData.email}
+              required={true}
+              autoComplete="email"
+            />
+            <InputForm
+              fieldName="password"
+              displayLabel="Password"
+              inputType='password'
+              placeholder="Enter your password"
+              handleOnChange={handleChange}
+              value={formData.password}
+              required={true}
+              autoComplete="new-password"
+            />
 
             {errorMsg && <AlertError message={errorMsg} />}
 
@@ -124,5 +115,4 @@ export const SignUp = () => {
       </div>
     </>
   );
-
 }

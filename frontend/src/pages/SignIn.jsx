@@ -1,40 +1,33 @@
-import { useState } from 'react'
-import { TvIcon } from '@heroicons/react/24/outline'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { api } from '../services/api.js';
-import { useUserStore } from '../store/userStore';
-import { AlertError } from '../components/AlertError.jsx'
+import { useState } from 'react';
+import { TvIcon } from '@heroicons/react/24/outline';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { AlertError } from '../components/AlertError.jsx';
 import { InputForm } from '../components/InputForm.jsx';
 import { Button } from '../components/Button.jsx';
-
+import { signinRequest } from '../api/auth.js';
 
 export const SignIn = () => {
-
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [errorMsg, setErrorMsg] = useState('');
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrorMsg("");
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const setToken = useUserStore(state => state.setToken);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
     try {
-      setLoading(true);
-      setErrorMsg("");
-
-      const { data } = await api.post('/auth/signin', formData);
-      setToken(data.token);
-      setFormData({ email: '', password: '' });
+      const res = await signinRequest(formData);
       navigate("/home");
-    } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || 'Error desconocido';
-      setErrorMsg(msg);
+    } catch (error) {
+      setErrorMsg(error?.response?.data?.message || 'Error en la solicitud de inicio de sesión');
     } finally {
       setLoading(false);
     }
@@ -52,44 +45,27 @@ export const SignIn = () => {
 
         <div className="mt-10 text-left sm:mx-auto sm:w-full sm:max-w-sm">
           <form id="sign-in-form" onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <div>
-                <InputForm
-                  fieldName="email"
-                  displayLabel="Email address"
-                  inputType='email'
-                  placeholder="Enter your email"
-                  handleOnChange={handleChange}
-                  value={formData.email}
-                  required={true}
-                />
-              </div>
-
-              <div>
-                <InputForm
-                  fieldName="password"
-                  displayLabel="Password"
-                  inputType='password'
-                  placeholder="Enter your password"
-                  handleOnChange={handleChange}
-                  value={formData.password}
-                  required={true}
-                />
-              </div>
-              {/* <div className="text-sm">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                    Forgot password?
-                  </a>
-                </div> */}
-            </div>
+            <InputForm
+              fieldName="email"
+              displayLabel="Email address"
+              inputType='email'
+              placeholder="Enter your email"
+              handleOnChange={handleChange}
+              value={formData.email}
+              required={true}
+            />
+            <InputForm
+              fieldName="password"
+              displayLabel="Password"
+              inputType='password'
+              placeholder="Enter your password"
+              handleOnChange={handleChange}
+              value={formData.password}
+              required={true}
+            />
             <AlertError message={errorMsg} />
-            <div>
-                <Button type="submit" loading={loading} loadingText='Creating...'> Create Account </Button>
-            </div>
-
-
+            <Button type="submit" loading={loading} loadingText='Signing in...'> Sign In </Button>
           </form>
-
           <p className="mt-10 text-center text-sm/6 text-gray-500">
             Not a member?{' '}
             <NavLink to="/signup" className="font-semibold text-indigo-600 hover:text-indigo-500">
@@ -99,5 +75,5 @@ export const SignIn = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
