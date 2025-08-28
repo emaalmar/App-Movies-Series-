@@ -2,7 +2,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, BellIcon, XMarkIcon, TvIcon } from '@heroicons/react/24/outline'
 import { Link, NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { useUserStore } from '../store/userStore';
+import { logoutRequest } from '../api/auth';
 
 const navigation = [
     { name: 'Peliculas', to: '/movies' },
@@ -14,12 +14,12 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-export const Navbar = () => {
-    const logout = useUserStore(state => state.logout);
+export const Navbar =() => {
+    logoutRequest();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        logout();
+    const handleLogout = async () => {
+        await logoutRequest();
         navigate('/');
     }
     return (

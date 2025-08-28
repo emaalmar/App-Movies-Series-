@@ -33,7 +33,11 @@ export async function signup(req, res) {
             { expiresIn: '1d' },
             (err, token) => {
                 if (err) return res.status(500).json({ message: 'Error al generar el token' })
-                res.cookie('token', token, { httpOnly: true })
+                res.cookie('token', token, {
+                    httpOnly: true,
+                    sameSite: 'lax',
+                    secure: false // true si usas HTTPS
+                });
                 res.json({
                     id: user._id,
                     fullName: user.fullName,
@@ -95,7 +99,11 @@ export async function signin(req, res) {
             { expiresIn: '1d' },
             (err, token) => {
                 if (err) return res.status(500).json({ message: 'Error al generar el token' })
-                res.cookie('token', token, { httpOnly: true })
+                res.cookie('token', token, {
+                    httpOnly: true,
+                    sameSite: 'lax',
+                    secure: false // true si usas HTTPS
+                });
                 res.json({
                     id: user._id,
                     fullName: user.fullName,

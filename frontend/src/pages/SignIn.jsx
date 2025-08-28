@@ -1,16 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TvIcon } from '@heroicons/react/24/outline';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AlertError } from '../components/AlertError.jsx';
 import { InputForm } from '../components/InputForm.jsx';
 import { Button } from '../components/Button.jsx';
-import { signinRequest } from '../api/auth.js';
+import { signinRequest, profileRequest } from '../api/auth.js';
 
 export const SignIn = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Check authentication on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        await profileRequest(); // No token arg needed
+        navigate('/home');
+      } catch (error) {
+        // Not authenticated, do nothing
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   const handleChange = (e) => {
     setFormData({
@@ -24,7 +37,7 @@ export const SignIn = () => {
     setLoading(true);
     setErrorMsg('');
     try {
-      const res = await signinRequest(formData);
+      await signinRequest(formData);
       navigate("/home");
     } catch (error) {
       setErrorMsg(error?.response?.data?.message || 'Error en la solicitud de inicio de sesión');
@@ -62,6 +75,7 @@ export const SignIn = () => {
               handleOnChange={handleChange}
               value={formData.password}
               required={true}
+              autoComplete="current-password"
             />
             <AlertError message={errorMsg} />
             <Button type="submit" loading={loading} loadingText='Signing in...'> Sign In </Button>

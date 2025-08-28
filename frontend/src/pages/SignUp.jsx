@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { TvIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { AlertSuccess } from '../components/AlertSuccess.jsx'
-import { api } from "../services/api.js"
+import { signupRequest } from '../api/auth.js'
 import { InputForm } from '../components/InputForm.jsx'
 import { AlertError } from '../components/AlertError.jsx'
 import { Button } from '../components/Button.jsx'
@@ -24,7 +24,7 @@ export const SignUp = () => {
     try {
       setLoading(true);
       setErrorMsg("");
-      const { data } = await api.post('/auth/signup', formData);
+      await signupRequest(formData);
       setShowAlert(true);
       setTimeout(() => {
         setShowAlert(false);

@@ -1,8 +1,8 @@
-import helmet from "helmet"
-import rateLimit from "express-rate-limit"
-import cors from "cors"
-import { CONFIG } from "../config/config.js"
-import express from "express"
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import cors from "cors";
+import { CONFIG } from "../config/config.js";
+import express from "express";
 
 // Configurar rate limiter
 const limiter = rateLimit({
@@ -20,7 +20,10 @@ const corsOptions = {
 
 // Exportar array de middlewares
 export const securityMiddleware = [
-    helmet(),
+    helmet({
+        crossOriginResourcePolicy: false,
+        crossOriginEmbedderPolicy: false,
+    }),
     limiter,
     cors(corsOptions),
     express.json({ limit: '10kb' }),

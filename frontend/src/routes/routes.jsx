@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { MainLayout } from '../layouts/MainLayout'
-// import ProtectedRoute from '../components/ProtectedRoute.jsx'
+import ProtectedRoute from '../components/ProtectedRoute.jsx'
 
 
 // Si exportan con nombre (p.ej. export const Home = ...):
@@ -17,12 +17,12 @@ export const AppRoutes = () => {
         <Suspense fallback={<div className="p-4 text-gray-200">Loading...</div>}>
             <Routes>
                 <Route element={<MainLayout />}>
-                    {/* <Route element={<ProtectedRoute />}> */}
+                    <Route element={<ProtectedRoute />}>
                         <Route path="home" element={<Home />} />
                         <Route path="movies" element={<Movies />} />
                         <Route path="tvshows" element={<TvShows />} />
                         <Route path="profile" element={<Profile />} />
-                    {/* </Route> */}
+                    </Route>
                 </Route>
 
                 {/* Ruta raíz como index */}
