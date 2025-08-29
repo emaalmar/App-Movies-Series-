@@ -11,7 +11,7 @@ const initialProfileState = {
     password: ''
 };
 
-export const Profile = () => {
+export const ProfilePage = () => {
     const [formData, setFormData] = useState(initialProfileState);
     const [errorMsg, setErrorMsg] = useState('');
     const token = useUserStore(state => state.token);

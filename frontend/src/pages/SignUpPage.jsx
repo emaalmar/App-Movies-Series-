@@ -8,7 +8,7 @@ import { InputForm } from '../components/InputForm.jsx'
 import { AlertError } from '../components/AlertError.jsx'
 import { Button } from '../components/Button.jsx'
 
-export const SignUp = () => {
+export const SignUpPage = () => {
 
   const [showAlert, setShowAlert] = useState(false);
   const [formData, setFormData] = useState({ fullName: "", email: "", password: "" });

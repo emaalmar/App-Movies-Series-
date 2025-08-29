@@ -8,7 +8,7 @@ import { InputForm } from '../components/InputForm.jsx';
 import { Button } from '../components/Button.jsx';
 
 
-export const SignIn = () => {
+export const SignInPage = () => {
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errorMsg, setErrorMsg] = useState('');
