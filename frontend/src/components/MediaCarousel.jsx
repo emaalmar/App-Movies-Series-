@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Carousel } from './Carousel';
 
-export const MediaCarousel = ({ name, apiUrl, accessToken }) => {
+export const MediaCarousel = ({ name, apiUrl, accessToken}) => {
     const [items, setItems] = useState([]);
 
     useEffect(() => {

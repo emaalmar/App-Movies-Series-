@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/User.model.js';
 import { z } from 'zod';
-import jwt from 'jsonwebtoken';
+
 
 
 export async function getMe(req, res) {
@@ -18,36 +18,6 @@ export async function getMe(req, res) {
         });
     }
 }
-
-// export async function updateMe(req, res) {
-//     try {
-//         const id = req.userID;
-//         const updateData = req.body;
-
-//         const validationResult = userSchema.safeParse(updateData);
-//         if (!validationResult.success) {
-//             return res.status(400).json({
-//                 message: 'Validation failed',
-//                 errors: validationResult.error.issues
-//             });
-//         }
-
-//         const user = await User.findByIdAndUpdate(
-//             id,
-//             { $set: validationResult.data },
-//             { new: true }
-//         );
-
-//         if (!user) {
-//             return res.status(404).json({ message: 'User not found' });
-//         }
-
-//         return res.json({ message: 'User updated successfully', user });
-//     } catch (error) {
-//         console.error(error);
-//         return res.status(500).json({ message: 'Error updating user' });
-//     }
-// }
 
 /**
  * Retrieves a paginated list of users.
