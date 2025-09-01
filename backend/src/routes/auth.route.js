@@ -1,9 +1,12 @@
 import { Router } from 'express'
-import { signup, signin } from '../controllers/auth.controller.js'
+import { signup, signin, logout, profile } from '../controllers/auth.controller.js'
+import { auth } from '../middleware/auth.js'
 
 const router = Router()
 router.post('/signup', signup)
 router.post('/signin', signin)
+router.post('/logout', logout)
+router.get('/profile', auth, profile)
 
 /* // ---- endpoint de prueba ----
 router.get('/header', (req, res) => {

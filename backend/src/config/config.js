@@ -11,4 +11,6 @@ export const CONFIG = {
         }
         throw new Error('SECRET_KEY environment variable is required');
     })()
+    ,
+    TMDB_API_KEY: process.env.TMDB_API_KEY
 };

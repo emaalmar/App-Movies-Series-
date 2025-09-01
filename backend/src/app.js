@@ -4,6 +4,7 @@ import { securityMiddleware } from "./middleware/security.js"
 import { connectDB } from "./database/mongoose.js"
 import authRoutes from "./routes/auth.route.js"
 import userRoutes from "./routes/user.route.js"
+import tmdbRoutes from './routes/tmdb.route.js'
 
 const app = express();
 
@@ -18,6 +19,7 @@ securityMiddleware.forEach(middleware => app.use(middleware));
 // Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use('/api/tmdb', tmdbRoutes)
 app.get('/health', (_, res) => res.json({ ok: true }));
 
 // Manejo de errores global
