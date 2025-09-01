@@ -11,7 +11,7 @@ export const ProfileProvider = ({ children }) => {
   const [error, setError] = useState(null)
 
   const load = useCallback(async () => {
-    if (!token) return
+  if (!token) return
     setLoading(true)
     setError(null)
     try {
@@ -39,11 +39,14 @@ export const ProfileProvider = ({ children }) => {
 
   const updateProfile = async (data) => {
     setLoading(true)
-    const res = await usersAPI.updateMe(data)
-    const user = res.user || res
-    setProfile(user)
-    setLoading(false)
-    return user
+    try {
+      const res = await usersAPI.updateMe(data)
+      const user = res.user || res
+      setProfile(user)
+      return user
+    } finally {
+      setLoading(false)
+    }
   }
 
   const updatePassword = async (currentPassword, newPassword) => {

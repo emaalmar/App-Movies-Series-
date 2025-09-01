@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { profile as fetchProfile } from '../api/auth'
-import { api } from '../services/api'
+import * as usersAPI from '../api/users'
 import { useUserStore } from '../store/userStore'
 
 const ProfileContext = createContext(null)
@@ -40,8 +40,8 @@ export const ProfileProvider = ({ children }) => {
 
   const updateProfile = async (data) => {
     setLoading(true)
-    const res = await api.put('/users/me', data)
-    const user = res.data?.user || res.user || res
+    const res = await usersAPI.updateMe(data)
+    const user = res.user || res
     setProfile(user)
     setLoading(false)
     return user
@@ -49,9 +49,9 @@ export const ProfileProvider = ({ children }) => {
 
   const updatePassword = async (currentPassword, newPassword) => {
     setLoading(true)
-    const res = await api.put('/users/me/password', { currentPassword, newPassword })
+    const res = await usersAPI.updatePassword(currentPassword, newPassword)
     setLoading(false)
-    return res.data || res
+    return res
   }
 
   const clearProfile = () => setProfile(null)

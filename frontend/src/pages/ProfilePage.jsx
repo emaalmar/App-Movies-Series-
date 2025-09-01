@@ -58,6 +58,12 @@ export const ProfilePage = () => {
         e.preventDefault()
         setSaving(true)
         try {
+            // basic client-side validation
+            if (!formData.email || formData.email.trim() === '') {
+                setPwError('El correo no puede estar vacío')
+                setSaving(false)
+                return
+            }
             const data = { fullName: formData.fullName, email: formData.email }
             await updateProfile(data)
             setSuccessMsg('Perfil actualizado')
@@ -79,6 +85,17 @@ export const ProfilePage = () => {
         setPwError('')
         setPwLoading(true)
         try {
+            // client validation
+            if (!currentPassword || currentPassword.trim() === '') {
+                setPwError('La contraseña actual no puede estar vacía')
+                setPwLoading(false)
+                return
+            }
+            if (!newPassword || newPassword.trim().length < 6) {
+                setPwError('La nueva contraseña debe tener al menos 6 caracteres')
+                setPwLoading(false)
+                return
+            }
             await updatePassword(currentPassword, newPassword)
             setSuccessMsg('Contraseña actualizada')
             setCurrentPassword('')

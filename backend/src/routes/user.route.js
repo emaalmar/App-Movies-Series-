@@ -33,10 +33,8 @@ router.param('id', (req, res, next, id) => {
     next();
 });
 
-// --- Rutas “me” (mapeadas a /:id para usuarios) ---
-router.put('/me', auth, aliasMeToId, updateUser);
-router.put('/me/password', auth, aliasMeToId, updateUserPassword);
-router.delete('/me', auth, aliasMeToId, deleteUser);
+// NOTE: /me routes removed — frontend should use GET /api/auth/profile for session
+// and call /users/:id for mutating operations. Alias middleware kept for legacy use.
 
 // --- Rutas admin/otros (por :id) ---
 router.get('/', auth, getUsers);

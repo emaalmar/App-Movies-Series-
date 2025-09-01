@@ -53,17 +53,25 @@ export async function updateUserPassword(req, res) {
         const { id } = req.params;
         const { currentPassword, newPassword } = req.body;
 
+        // Basic validation: require both passwords and enforce minimum strength for the new password
+        if (!currentPassword || typeof currentPassword !== 'string' || currentPassword.trim() === '') {
+            return res.status(400).json({ message: 'Current password is required' });
+        }
+        if (!newPassword || typeof newPassword !== 'string' || newPassword.trim().length < 6) {
+            return res.status(400).json({ message: 'New password must be at least 6 characters' });
+        }
+
         const user = await User.findById(id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Current password is incorrect' });
-        }
+    const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isMatch) {
+        return res.status(400).json({ message: 'Current password is incorrect' });
+    }
 
-        user.passwordHash = await bcrypt.hash(newPassword, 10);
+    user.passwordHash = await bcrypt.hash(newPassword, 10);
         await user.save();
 
         return res.json({ message: 'Password updated successfully' });
