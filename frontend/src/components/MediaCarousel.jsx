@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Carousel } from './Carousel'
-import { api } from '../services/api'
+import { trending, discoverMovie, discoverTv } from '../api/tmdb'
 
 // apiUrl should be the TMDB path relative to /api/tmdb, e.g. /discover/movie or /trending/movie/day
 export const MediaCarousel = ({ name, apiUrl }) => {
@@ -9,8 +9,22 @@ export const MediaCarousel = ({ name, apiUrl }) => {
     useEffect(() => {
         const getItems = async () => {
             try {
-                const res = await api.get(`/tmdb${apiUrl}`)
-                setItems(res.data.results || [])
+                // apiUrl expected in form /discover/movie or /trending/movie/day
+                let data
+                if (apiUrl.startsWith('/discover/movie')) data = await discoverMovie()
+                else if (apiUrl.startsWith('/discover/tv')) data = await discoverTv()
+                else if (apiUrl.startsWith('/trending')) {
+                    // example: /trending/movie/day
+                    const parts = apiUrl.split('/').filter(Boolean)
+                    const media = parts[1] || 'movie'
+                    const period = parts[2] || 'day'
+                    data = await trending(media, period)
+                } else {
+                    // fallback: try calling the generic trending route
+                    data = await trending()
+                }
+
+                setItems(data.results || [])
             } catch (err) {
                 console.error('MediaCarousel error', err)
             }

@@ -2,23 +2,6 @@ import bcrypt from 'bcryptjs';
 import User from '../models/User.model.js';
 import { z } from 'zod';
 
-
-
-export async function getMe(req, res) {
-    try {
-        const id = req.userId;
-        const user = await User.findById(id)
-        if(!user) return res.status(404).json({message: 'User not found'})
-        return res.json({message: 'User retrieved successfully', user})
-    } catch (error) {
-        console.error('getMe error:', error);
-        return res.status(500).json({
-            message: 'Internal server error',
-            error: error.message
-        });
-    }
-}
-
 /**
  * Retrieves a paginated list of users.
  */

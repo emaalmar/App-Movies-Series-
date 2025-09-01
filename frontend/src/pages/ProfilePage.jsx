@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useProfile } from "../hooks/useProfile.jsx"
+import { useProfile } from "../hooks/useProfileHook"
 import { InputForm } from "../components/InputForm.jsx"
 import { AlertError } from "../components/AlertError.jsx"
 import { AlertSuccess } from "../components/AlertSuccess.jsx"
@@ -45,8 +45,6 @@ export const ProfilePage = () => {
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
     }
-
-    const handleStartEdit = () => setEditing(true)
 
     const handleCancelEdit = () => {
         // reset to profile values

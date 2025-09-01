@@ -1,9 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { profile as fetchProfile } from '../api/auth'
-import { api } from '../services/api'
+import * as usersAPI from '../api/users'
 import { useUserStore } from '../store/userStore'
-
-const ProfileContext = createContext(null)
+import { ProfileContext } from './profileContext'
 
 export const ProfileProvider = ({ children }) => {
   const token = useUserStore(state => state.token)
@@ -40,8 +39,8 @@ export const ProfileProvider = ({ children }) => {
 
   const updateProfile = async (data) => {
     setLoading(true)
-    const res = await api.put('/users/me', data)
-    const user = res.data?.user || res.user || res
+    const res = await usersAPI.updateMe(data)
+    const user = res.user || res
     setProfile(user)
     setLoading(false)
     return user
@@ -49,9 +48,9 @@ export const ProfileProvider = ({ children }) => {
 
   const updatePassword = async (currentPassword, newPassword) => {
     setLoading(true)
-    const res = await api.put('/users/me/password', { currentPassword, newPassword })
+    const res = await usersAPI.updatePassword(currentPassword, newPassword)
     setLoading(false)
-    return res.data || res
+    return res
   }
 
   const clearProfile = () => setProfile(null)
@@ -63,8 +62,3 @@ export const ProfileProvider = ({ children }) => {
   )
 }
 
-export const useProfile = () => {
-  const ctx = useContext(ProfileContext)
-  if (!ctx) throw new Error('useProfile must be used within ProfileProvider')
-  return ctx
-}

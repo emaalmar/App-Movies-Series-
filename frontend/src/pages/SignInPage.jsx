@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { TvIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { signin } from '../api/auth.js'
-import { useProfile } from '../hooks/useProfile.jsx'
+import { useProfile } from '../hooks/useProfileHook'
 import { useUserStore } from '../store/userStore';
 import { AlertError } from '../components/AlertError.jsx'
 import { InputForm } from '../components/InputForm.jsx';
