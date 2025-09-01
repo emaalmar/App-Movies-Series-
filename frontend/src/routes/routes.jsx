@@ -27,6 +27,7 @@ export const AppRoutes = () => {
 
                 {/* Ruta raíz como index */}
                 <Route index element={<SignInPage />} />
+                <Route path="signin" element={<SignInPage />} />
                 <Route path="signup" element={<SignUpPage />} />
             </Routes>
         </Suspense>

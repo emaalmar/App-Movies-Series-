@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { TvIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { api } from '../services/api.js';
+import { signin } from '../api/auth.js'
+import { useProfile } from '../hooks/useProfile.jsx'
 import { useUserStore } from '../store/userStore';
 import { AlertError } from '../components/AlertError.jsx'
 import { InputForm } from '../components/InputForm.jsx';
@@ -21,15 +22,19 @@ export const SignInPage = () => {
   };
 
   const setToken = useUserStore(state => state.setToken);
+  const { load: loadProfile } = useProfile();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      setLoading(true);
-      setErrorMsg("");
+  setLoading(true);
+  setErrorMsg("");
 
-      const { data } = await api.post('/auth/signin', formData);
-      setToken(data.token);
+  const { token } = await signin(formData);
+      if (token) {
+        setToken(token)
+  try { await loadProfile() } catch { /* ignore load errors */ }
+      }
       setFormData({ email: '', password: '' });
       navigate("/home");
     } catch (err) {

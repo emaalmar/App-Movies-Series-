@@ -2,6 +2,7 @@ import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import User from '../models/User.model.js'
 import jwt from 'jsonwebtoken'
+import RevokedToken from '../models/RevokedToken.model.js'
 
 const signupSchema = z.object({
     fullName: z.string().trim().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
@@ -13,13 +14,14 @@ const signupSchema = z.object({
 
 export async function signup(req, res) {
     try {
-        const { fullName, email, password } = signupSchema.parse(req.body)
+    const { fullName, email, password } = signupSchema.parse(req.body)
+    const normalizedEmail = email.trim().toLowerCase()
 
-        const exists = await User.findOne({ email })
+    const exists = await User.findOne({ email: normalizedEmail })
         if (exists) return res.status(409).json({ message: 'El correo ya está registrado' })
 
         const passwordHash = await bcrypt.hash(password, 10)
-        const user = await User.create({ fullName, email, passwordHash })
+    const user = await User.create({ fullName, email: normalizedEmail, passwordHash })
 
         const token = jwt.sign({ sub: user._id, email: user.email }, process.env.SECRET_KEY, { expiresIn: '7d' })
 
@@ -65,6 +67,46 @@ export async function signin(req, res) {
         return res.status(200).json({ message: 'Inicio de sesión exitoso', token })
     } catch (err) {
         console.error(err)
+        return res.status(500).json({ message: 'Error interno' })
+    }
+}
+
+export async function logout(req, res) {
+    try {
+        const authHeader = req.headers.authorization || ''
+        if (!authHeader.startsWith('Bearer ')) return res.status(400).json({ message: 'Invalid authorization header' })
+
+        const token = authHeader.split(' ')[1]
+        if (!token) return res.status(400).json({ message: 'Token is required' })
+
+        // Decode token to get expiration
+        const decoded = jwt.decode(token)
+        if (!decoded || !decoded.exp) {
+            return res.status(400).json({ message: 'Invalid token' })
+        }
+
+        // exp is in seconds since epoch
+        const expiresAt = new Date(decoded.exp * 1000)
+
+        await RevokedToken.create({ token, expiresAt })
+        return res.status(200).json({ message: 'Logged out successfully' })
+    } catch (err) {
+        console.error('logout error:', err)
+        return res.status(500).json({ message: 'Error interno' })
+    }
+}
+
+export async function profile(req, res) {
+    try {
+        const userId = req.userId
+        if (!userId) return res.status(400).json({ message: 'User id missing in token' })
+
+        const user = await User.findById(userId)
+        if (!user) return res.status(404).json({ message: 'User not found' })
+
+        return res.status(200).json({ message: 'Profile retrieved', user })
+    } catch (err) {
+        console.error('profile error:', err)
         return res.status(500).json({ message: 'Error interno' })
     }
 }

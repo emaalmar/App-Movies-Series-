@@ -7,3 +7,40 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
   // withCredentials: true
 })
+
+// Request interceptor: add Authorization header from localStorage
+api.interceptors.request.use(
+  (config) => {
+    try {
+      const token = localStorage.getItem('token')
+      if (token) {
+        config.headers = config.headers || {}
+        config.headers['Authorization'] = `Bearer ${token}`
+      }
+    } catch {
+      // ignore when running in non-browser env
+    }
+    return config
+  },
+  (error) => Promise.reject(error)
+)
+
+// Response interceptor: on 401 clear token and redirect to signin
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status
+    if (status === 401) {
+      try {
+        localStorage.removeItem('token')
+        if (typeof window !== 'undefined') {
+          // redirect to signin page
+          window.location.href = '/signin'
+        }
+      } catch {
+        // noop
+      }
+    }
+    return Promise.reject(error)
+  }
+)

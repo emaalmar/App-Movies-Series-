@@ -19,10 +19,12 @@ const corsOptions = {
 };
 
 // Exportar array de middlewares
+// Important: cors must be applied before the rate limiter so preflight (OPTIONS)
+// requests receive the Access-Control-Allow-* headers even if rate limits are hit.
 export const securityMiddleware = [
     helmet(),
-    limiter,
     cors(corsOptions),
+    limiter,
     express.json({ limit: '10kb' }),
     express.urlencoded({ extended: true })
 ];

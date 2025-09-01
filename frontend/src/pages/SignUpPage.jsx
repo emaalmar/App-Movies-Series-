@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { TvIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { AlertSuccess } from '../components/AlertSuccess.jsx'
-import { api } from "../services/api.js"
+import { signup } from '../api/auth.js'
+import { useProfile } from '../hooks/useProfile.jsx'
 import { useUserStore } from '../store/userStore.js'
 import { InputForm } from '../components/InputForm.jsx'
 import { AlertError } from '../components/AlertError.jsx'
@@ -21,6 +22,7 @@ export const SignUpPage = () => {
     setErrorMsg("");
   };
   const setToken = useUserStore(state => state.setToken);
+  const { load: loadProfile } = useProfile();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -28,8 +30,11 @@ export const SignUpPage = () => {
       setLoading(true);
       setErrorMsg("");
 
-      const { data } = await api.post('/auth/signup', formData);
-      setToken(data.token);
+      const { token } = await signup(formData);
+      if (token) {
+        setToken(token)
+        try { await loadProfile() } catch { /* ignore profile load errors */ }
+      }
       setShowAlert(true);
       navigate('/home');
     } catch (err) {

@@ -18,8 +18,8 @@ export const Navbar = () => {
     const logout = useUserStore(state => state.logout);
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        logout();
+    const handleLogout = async () => {
+        await logout();
         navigate('/');
     }
     return (

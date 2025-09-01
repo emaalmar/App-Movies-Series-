@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
+import RevokedToken from '../models/RevokedToken.model.js';
 
-export const auth = (req, res, next) => {
+export const auth = async (req, res, next) => {
     try {
         // Check if authorization header exists
         if (!req.headers.authorization) {
@@ -28,6 +29,12 @@ export const auth = (req, res, next) => {
         }
 
         // Verify token
+        // Check if token has been revoked
+    const revoked = await RevokedToken.findOne({ token });
+        if (revoked) {
+            return res.status(401).json({ message: 'Token revoked' });
+        }
+
         const payload = jwt.verify(token, process.env.SECRET_KEY);
 
         // Validate payload

@@ -8,7 +8,7 @@ import {
     deleteUser,
     getUsers,
     updateUserPassword,
-    getMe,
+    // getMe moved to auth.controller as profile
     // updateMe //
 } from '../controllers/user.controller.js';
 
@@ -32,8 +32,7 @@ router.param('id', (req, res, next, id) => {
     next();
 });
 
-// --- Rutas “me” ---
-router.get('/me', auth, getMe);
+// --- Rutas “me” (mapeadas a /:id para usuarios) ---
 router.put('/me', auth, aliasMeToId, updateUser);
 router.put('/me/password', auth, aliasMeToId, updateUserPassword);
 router.delete('/me', auth, aliasMeToId, deleteUser);

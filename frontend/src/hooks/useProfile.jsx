@@ -1,0 +1,70 @@
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { profile as fetchProfile } from '../api/auth'
+import { api } from '../services/api'
+import { useUserStore } from '../store/userStore'
+
+const ProfileContext = createContext(null)
+
+export const ProfileProvider = ({ children }) => {
+  const token = useUserStore(state => state.token)
+  const [profile, setProfile] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const load = useCallback(async () => {
+    if (!token) return
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetchProfile()
+      const user = res.user || res.data?.user || res
+      setProfile(user)
+      return user
+    } catch (err) {
+      setError(err?.response?.data?.message || err?.message)
+      setProfile(null)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }, [token])
+
+  useEffect(() => {
+    if (token) {
+      load()
+    } else {
+      setProfile(null)
+      setError(null)
+    }
+  }, [token, load])
+
+  const updateProfile = async (data) => {
+    setLoading(true)
+    const res = await api.put('/users/me', data)
+    const user = res.data?.user || res.user || res
+    setProfile(user)
+    setLoading(false)
+    return user
+  }
+
+  const updatePassword = async (currentPassword, newPassword) => {
+    setLoading(true)
+    const res = await api.put('/users/me/password', { currentPassword, newPassword })
+    setLoading(false)
+    return res.data || res
+  }
+
+  const clearProfile = () => setProfile(null)
+
+  return (
+    <ProfileContext.Provider value={{ profile, loading, error, load, updateProfile, updatePassword, clearProfile }}>
+      {children}
+    </ProfileContext.Provider>
+  )
+}
+
+export const useProfile = () => {
+  const ctx = useContext(ProfileContext)
+  if (!ctx) throw new Error('useProfile must be used within ProfileProvider')
+  return ctx
+}

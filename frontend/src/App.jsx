@@ -1,11 +1,13 @@
-import { AppRoutes } from './routes/routes';
+import { AppRoutes } from './routes/routes'
+import { ProfileProvider } from './hooks/useProfile.jsx'
 
 function App() {
-  
   return (
-    <div className="">
-      <AppRoutes />
-    </div>
+    <ProfileProvider>
+      <div className="">
+        <AppRoutes />
+      </div>
+    </ProfileProvider>
   )
 }
 

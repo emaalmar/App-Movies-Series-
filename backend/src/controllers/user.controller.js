@@ -114,6 +114,16 @@ export async function updateUser(req, res) {
             });
         }
 
+        // If email is provided, normalize it and ensure it's not already used by another user
+        if (validationResult.data.email) {
+            const normalizedEmail = validationResult.data.email.trim().toLowerCase();
+            validationResult.data.email = normalizedEmail;
+            const existing = await User.findOne({ email: normalizedEmail });
+            if (existing && existing._id.toString() !== id) {
+                return res.status(409).json({ message: 'El correo ya está registrado' });
+            }
+        }
+
         const user = await User.findByIdAndUpdate(
             id,
             { $set: validationResult.data },
@@ -126,8 +136,12 @@ export async function updateUser(req, res) {
 
         return res.json({ message: 'User updated successfully', user });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error updating user' });
+        console.error('updateUser error:', error);
+        // Handle duplicate email (unique index) explicitly
+        if (error && error.code === 11000) {
+            return res.status(409).json({ message: 'El correo ya está registrado' });
+        }
+        res.status(500).json({ message: 'Error updating user', error: error.message });
     }
 }
 
