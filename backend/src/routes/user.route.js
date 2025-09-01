@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { isValidObjectId } from 'mongoose';
 import { auth } from '../middleware/auth.js';
+import { ensureOwnerOrAdmin } from '../middleware/ensureOwnerOrAdmin.js';
 
 import {
     updateUser,
@@ -43,9 +44,9 @@ router.get('/', auth, getUsers);
 router
     .route('/:id')
     .get(auth, getUser)
-    .put(auth, updateUser)
-    .delete(auth, deleteUser);
+    .put(auth, auth, ensureOwnerOrAdmin, updateUser)
+    .delete(auth, auth, ensureOwnerOrAdmin, deleteUser);
 
-router.put('/:id/password', auth, updateUserPassword);
+router.put('/:id/password', auth, ensureOwnerOrAdmin, updateUserPassword);
 
 export default router;

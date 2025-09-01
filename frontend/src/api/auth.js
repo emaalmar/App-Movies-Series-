@@ -11,7 +11,6 @@ export async function signin(data) {
 }
 
 export async function logout() {
-  // Authorization header is attached by interceptor
   const res = await api.post('/auth/logout')
   return res.data
 }
