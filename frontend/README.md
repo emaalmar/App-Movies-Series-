@@ -20,6 +20,15 @@ El objetivo de este proyecto es aprender y profundizar en el desarrollo de aplic
 ## Autor
 - Emanuel Ledesma
 
+## Tecnologías utilizadas
+- React
+- Vite
+- Node.js
+- Express
+- MongoDB
+- JavaScript (ES6+)
+- CSS
+
 ## Acuerdos de trabajo
 Trabajo realizado de manera individual, siguiendo buenas prácticas de desarrollo, control de versiones con Git y organización de tareas por etapas.
 
