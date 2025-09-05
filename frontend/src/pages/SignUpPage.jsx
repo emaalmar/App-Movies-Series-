@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { z } from 'zod'
 import { TvIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { AlertSuccess } from '../components/AlertSuccess.jsx'
@@ -9,12 +10,22 @@ import { InputForm } from '../components/InputForm.jsx'
 import { AlertError } from '../components/AlertError.jsx'
 import { Button } from '../components/Button.jsx'
 
+// Esquema de validación con Zod
+const signUpSchema = z.object({
+  fullName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+  email: z.string().email('Correo electrónico inválido'),
+  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+})
+
+
+
 export const SignUpPage = () => {
 
   const [showAlert, setShowAlert] = useState(false);
   const [formData, setFormData] = useState({ fullName: "", email: "", password: "" });
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -26,10 +37,21 @@ export const SignUpPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setValidationErrors({});
+    setErrorMsg("");
+    // Validación con Zod
+    const result = signUpSchema.safeParse(formData);
+    if (!result.success) {
+      // Mapear errores de Zod
+      const fieldErrors = {};
+      result.error.errors.forEach(err => {
+        fieldErrors[err.path[0]] = err.message;
+      });
+      setValidationErrors(fieldErrors);
+      return;
+    }
     try {
       setLoading(true);
-      setErrorMsg("");
-
       const { token } = await signup(formData);
       if (token) {
         setToken(token)
@@ -76,6 +98,9 @@ export const SignUpPage = () => {
                 value={formData.fullName}
                 autoComplete="name"
               />
+              {validationErrors.fullName && (
+                <p className="text-xs text-red-600 mt-1">{validationErrors.fullName}</p>
+              )}
 
 
               <div>
@@ -89,6 +114,9 @@ export const SignUpPage = () => {
                   required={true}
                   autoComplete="email"
                 />
+                {validationErrors.email && (
+                  <p className="text-xs text-red-600 mt-1">{validationErrors.email}</p>
+                )}
               </div>
 
               <div>
@@ -102,6 +130,9 @@ export const SignUpPage = () => {
                   required={true}
                   autoComplete="new-password"
                 />
+                {validationErrors.password && (
+                  <p className="text-xs text-red-600 mt-1">{validationErrors.password}</p>
+                )}
               </div>
               {/* <div className="mt-2 text-xs text-left">
                 <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
