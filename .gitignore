@@ -1,0 +1,10 @@
+# Node modules
+node_modules/
+# Vite cache
+node_modules/.vite/
+# Env files
+.env
+# Otros archivos temporales
+dist/
+.DS_Store
+*.log
