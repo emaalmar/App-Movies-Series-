@@ -17,8 +17,6 @@ const signUpSchema = z.object({
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
 })
 
-
-
 export const SignUpPage = () => {
 
   const [showAlert, setShowAlert] = useState(false);
