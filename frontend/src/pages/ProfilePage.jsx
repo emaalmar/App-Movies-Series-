@@ -29,7 +29,7 @@ export const ProfilePage = () => {
             setFormData({
                 fullName: profile.fullName,
                 email: profile.email,
-                password: profile.passwordHash || ''
+                password: '' // nunca mostrar el hash
             })
         }
     }, [profile])
@@ -54,13 +54,21 @@ export const ProfilePage = () => {
         setEditing(false)
     }
 
+    const [profileError, setProfileError] = useState('')
+
     const handleSave = async (e) => {
         e.preventDefault()
         setSaving(true)
+        setProfileError('')
         try {
-            // basic client-side validation
+            // validación básica
             if (!formData.email || formData.email.trim() === '') {
-                setPwError('El correo no puede estar vacío')
+                setProfileError('El correo no puede estar vacío')
+                setSaving(false)
+                return
+            }
+            if (!formData.fullName || formData.fullName.trim() === '') {
+                setProfileError('El nombre no puede estar vacío')
                 setSaving(false)
                 return
             }
@@ -70,11 +78,9 @@ export const ProfilePage = () => {
             setEditing(false)
             await load()
         } catch (err) {
-            // show error via AlertError below
             console.error('updateProfile error', err)
             const msg = err?.response?.data?.message || err?.message || 'Error al actualizar perfil'
-            // reuse pwError area for errors, or display general error
-            setPwError(msg)
+            setProfileError(msg)
         } finally {
             setSaving(false)
         }
@@ -115,16 +121,13 @@ export const ProfilePage = () => {
                 </h1>
             </div>
             <div className="mt-10 text-left sm:mx-auto sm:w-full sm:max-w-sm">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-semibold">Información</h2>
-                    {!editing ? (
-                        <Button onClick={() => setEditing(true)}>Editar</Button>
-                    ) : (
-                        <Button onClick={handleCancelEdit}>Cancelar</Button>
-                    )}
-                </div>
+
 
                 <form onSubmit={handleSave} className="space-y-5 bg-white rounded-lg shadow p-6">
+                    <div className="flex justify-center items-center mb-4 space-x-4">
+                        <h2 className="text-lg font-semibold">Información</h2>
+
+                    </div>
                     <InputForm
                         fieldName="fullName"
                         displayLabel="Nombre"
@@ -140,17 +143,41 @@ export const ProfilePage = () => {
                         inputType="email"
                         value={formData.email}
                         handleOnChange={handleChange}
-                        disabled={false}
+                        disabled={!editing}
                         autoComplete="email"
                     />
 
-                    {error && <AlertError message={error} />}
+                    {profileError && <AlertError message={profileError} />}
                     {successMsg && <AlertSuccess title="Éxito" text={successMsg} onClose={() => setSuccessMsg('')} />}
 
-                    <div className="flex items-center space-x-3">
-                        <Button type="submit" disabled={saving}>Guardar</Button>
-                        <Button type="button" onClick={handleCancelEdit} disabled={saving}>Cancelar</Button>
-                    </div>
+                    {!editing ? (
+                        <Button
+                            className=""
+                            type="button"
+                            onClick={() => setEditing(true)}
+                            disabled={saving}
+                        >
+                            Editar
+                        </Button>
+                    ) : (
+                        <>
+                            <Button
+                                className=""
+                                type="submit"
+                                disabled={saving}
+                            >
+                                Guardar
+                            </Button>
+                            <Button
+                                className=""
+                                type="button"
+                                onClick={handleCancelEdit}
+                                disabled={saving}
+                            >
+                                Cancelar
+                            </Button>
+                        </>
+                    )}
                 </form>
 
                 <div className="mt-6 bg-white rounded-lg shadow p-6">

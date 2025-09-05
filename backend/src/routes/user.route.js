@@ -2,30 +2,17 @@ import { Router } from 'express';
 import { isValidObjectId } from 'mongoose';
 import { auth } from '../middleware/auth.js';
 import { ensureOwnerOrAdmin } from '../middleware/ensureOwnerOrAdmin.js';
-
 import {
     updateUser,
     getUser,
     deleteUser,
     getUsers,
     updateUserPassword,
-    // getMe moved to auth.controller as profile
-    // updateMe //
 } from '../controllers/user.controller.js';
 
 const router = Router();
 
-/** Middleware reutilizable para mapear /me -> :id */
-const aliasMeToId = (req, res, next) => {
-    const userId = req.userId;
-    if (!userId || !isValidObjectId(userId)) {
-        return res.status(400).json({ message: 'Invalid user id in token' });
-    }
-    req.params.id = userId;
-    next();
-};
-
-/** Valida :id (solo aplica en rutas que tienen :id en el path) */
+// Valida :id en rutas que lo requieran
 router.param('id', (req, res, next, id) => {
     if (!isValidObjectId(id)) {
         return res.status(400).json({ message: 'Invalid id' });
@@ -33,18 +20,15 @@ router.param('id', (req, res, next, id) => {
     next();
 });
 
-// NOTE: /me routes removed — frontend should use GET /api/auth/profile for session
-// and call /users/:id for mutating operations. Alias middleware kept for legacy use.
-
-// --- Rutas admin/otros (por :id) ---
+// Obtener todos los usuarios (admin)
 router.get('/', auth, getUsers);
 
-router
-    .route('/:id')
-    .get(auth, getUser)
-    .put(auth, auth, ensureOwnerOrAdmin, updateUser)
-    .delete(auth, auth, ensureOwnerOrAdmin, deleteUser);
+// Operaciones sobre usuario específico
+router.get('/:id', auth, getUser);
+router.put('/:id', auth, ensureOwnerOrAdmin, updateUser);
+router.delete('/:id', auth, ensureOwnerOrAdmin, deleteUser);
 
+// Actualizar contraseña de usuario
 router.put('/:id/password', auth, ensureOwnerOrAdmin, updateUserPassword);
 
 export default router;
