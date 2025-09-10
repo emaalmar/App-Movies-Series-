@@ -181,7 +181,7 @@ export const ProfilePage = () => {
                 </form>
 
                 <div className="mt-6 bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-medium mb-2">Cambiar contraseña</h3>
+                    <h3 className="text-lg font-medium mb-2 flex justify-center items-center mb-4 space-x-4">Cambiar contraseña</h3>
                     <form onSubmit={handleChangePassword} className="space-y-3">
                         <InputForm fieldName="currentPassword" displayLabel="Contraseña actual" inputType="password" value={currentPassword} handleOnChange={(e) => setCurrentPassword(e.target.value)} />
                         <InputForm fieldName="newPassword" displayLabel="Nueva contraseña" inputType="password" value={newPassword} handleOnChange={(e) => setNewPassword(e.target.value)} />
