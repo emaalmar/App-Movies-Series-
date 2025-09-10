@@ -13,7 +13,7 @@ const initialProfileState = {
 
 export const ProfilePage = () => {
     const [formData, setFormData] = useState(initialProfileState)
-    const { profile, error, updateProfile, updatePassword, load } = useProfile()
+    const { profile, updateProfile, updatePassword, load } = useProfile()
     const [editing, setEditing] = useState(false)
     const [saving, setSaving] = useState(false)
     const [successMsg, setSuccessMsg] = useState('')
