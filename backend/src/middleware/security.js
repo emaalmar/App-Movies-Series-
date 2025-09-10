@@ -10,9 +10,17 @@ const limiter = rateLimit({
     max: 100
 });
 
-// Configurar CORS
+// Configurar CORS para múltiples orígenes
+const allowedOrigins = CONFIG.CORS_ORIGIN.split(',').map(origin => origin.trim());
 const corsOptions = {
-    origin: CONFIG.CORS_ORIGIN,
+    origin: function (origin, callback) {
+        // Permitir peticiones sin origen (como Postman) o si el origen está en la lista
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
