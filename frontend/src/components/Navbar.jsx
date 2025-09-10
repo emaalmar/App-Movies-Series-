@@ -18,8 +18,13 @@ export const Navbar = () => {
     const logout = useUserStore(state => state.logout);
     const navigate = useNavigate();
 
+<<<<<<< HEAD
     const handleLogout = () => {
         logout();
+=======
+    const handleLogout = async () => {
+        await logout();
+>>>>>>> entrega-inicial
         navigate('/');
     }
     return (
@@ -38,6 +43,10 @@ export const Navbar = () => {
                             <XMarkIcon aria-hidden="true" className="hidden size-6 group-data-open:block" />
                         </DisclosureButton>
                     </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> entrega-inicial
                     <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                         <div className="flex shrink-0 items-center">
                             <Link to="/home" aria-label="Movies and TV Shows">
@@ -87,6 +96,7 @@ export const Navbar = () => {
 
                             <MenuItems
                                 transition
+<<<<<<< HEAD
                                 className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg outline outline-black/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in dark:bg-gray-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10"
                             >
                                 <MenuItem as={Link} to="/profile" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5">
@@ -97,6 +107,18 @@ export const Navbar = () => {
                                 </MenuItem>
 
                                 <MenuItem as="button" onClick={handleLogout} className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5">
+=======
+                                className="absolute right-0 z-10 mt-2 w-30 origin-top-right rounded-md bg-white py-1 shadow-lg outline outline-black/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in dark:bg-gray-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10"
+                            >
+                                <MenuItem as="button" onClick={() => navigate("/profile")} className="block px-6 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5">
+                                    Your profile
+                                </MenuItem>
+                                <MenuItem as="button" onClick={() => navigate("/settings")} className="block px-6 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5">
+                                    Settings
+                                </MenuItem>
+
+                                <MenuItem as="button" onClick={handleLogout} className="block px-6 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5">
+>>>>>>> entrega-inicial
                                     Sign out
                                 </MenuItem>
                             </MenuItems>

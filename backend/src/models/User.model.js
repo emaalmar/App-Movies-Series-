@@ -17,7 +17,19 @@ const userSchema = new mongoose.Schema({
     passwordHash: {
         type: String,
         required: true,
+<<<<<<< HEAD
     }
+=======
+    },
+/*     avatar:{
+        type: File,
+        default: null
+    },
+    number:{
+        type: Number,
+        default: null
+    } */
+>>>>>>> entrega-inicial
 }, {
     timestamps: true
 }
