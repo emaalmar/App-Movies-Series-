@@ -8,6 +8,14 @@ import tmdbRoutes from './routes/tmdb.route.js'
 
 const app = express();
 
+// When the app is running behind a proxy (like Vercel) Express must be
+// told to trust the proxy so middleware that relies on the client's IP
+// (such as express-rate-limit) can read the correct address from
+// the X-Forwarded-For header. Setting to 1 trusts the first proxy.
+if (process.env.VERCEL || CONFIG.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+}
+
 // Validar configuración
 if (!CONFIG.MONGODB_URI || !CONFIG.SECRET_KEY) {
     throw new Error('Critical environment variables are missing');
