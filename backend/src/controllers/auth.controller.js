@@ -21,7 +21,7 @@ export async function signup(req, res) {
         const user = await User.create({ fullName, email: normalizedEmail, passwordHash })
 
         const token = jwt.sign({ sub: user._id, email: user.email }, process.env.SECRET_KEY, { expiresIn: '7d' })
-        return res.status(201).json({ message: 'Usuario creado', token })
+        return res.status(201).json({ message: 'Usuario creado', token, user })
     } catch (err) {
         if (err?.code === 11000) {
             return res.status(409).json({ message: 'El correo ya está registrado' })
@@ -50,7 +50,7 @@ export async function signin(req, res) {
         if (!isMatch) return res.status(401).json({ message: 'Usuario o contraseña incorrectos' })
 
         const token = jwt.sign({ sub: user._id, email: user.email }, process.env.SECRET_KEY, { expiresIn: '7d' })
-        return res.status(200).json({ message: 'Inicio de sesión exitoso', token })
+        return res.status(200).json({ message: 'Inicio de sesión exitoso', token, user })
     } catch (err) {
         console.error(err)
         return res.status(500).json({ message: 'Error interno' })

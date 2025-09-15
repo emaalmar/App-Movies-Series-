@@ -1,13 +1,16 @@
+import { AuthProvider } from './contexts/AuthContext.jsx'
 import { AppRoutes } from './routes/routes'
-import { ProfileProvider } from './hooks/useProfile.jsx'
+import { ProfileProvider } from './contexts/ProfileContext'
 
 function App() {
   return (
-    <ProfileProvider>
-      <div className="">
-        <AppRoutes />
-      </div>
-    </ProfileProvider>
+    <AuthProvider>
+      <ProfileProvider>
+        <div className="">
+          <AppRoutes />
+        </div>
+      </ProfileProvider>
+    </AuthProvider>
   )
 }
 

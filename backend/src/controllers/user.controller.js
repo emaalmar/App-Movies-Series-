@@ -68,7 +68,7 @@ export async function updateUserPassword(req, res) {
 
     const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
     if (!isMatch) {
-        return res.status(400).json({ message: 'Current password is incorrect' });
+        return res.status(400).json({ message: 'La contraseña actual es incorrecta' });
     }
 
     user.passwordHash = await bcrypt.hash(newPassword, 10);

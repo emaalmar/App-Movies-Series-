@@ -2,27 +2,25 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { TvIcon } from '@heroicons/react/24/outline'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { signin } from '../api/auth.js'
+import { AlertError } from '../components/AlertError.jsx'
+import { InputForm } from '../components/InputForm.jsx';
+import { Button } from '../components/Button.jsx';
+import { useAuth } from '../contexts/AuthContext';
+
 // Esquema de validación con Zod para login
 const signInSchema = z.object({
   email: z.string().email('Correo electrónico inválido'),
   password: z.string('La contraseña no puede estar vacia'),
 })
-import { TvIcon } from '@heroicons/react/24/outline'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { signin } from '../api/auth.js'
-import { useProfile } from '../hooks/useProfileHook'
-import { useUserStore } from '../store/userStore';
-import { AlertError } from '../components/AlertError.jsx'
-import { InputForm } from '../components/InputForm.jsx';
-import { Button } from '../components/Button.jsx';
-
 
 export const SignInPage = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const setToken = useUserStore(state => state.setToken);
-  const { load: loadProfile } = useProfile();
+  const { setUser } = useAuth();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     resolver: zodResolver(signInSchema),
@@ -33,10 +31,10 @@ export const SignInPage = () => {
     setErrorMsg("");
     try {
       setLoading(true);
-      const { token } = await signin(data);
+      const { token, user } = await signin(data);
       if (token) {
-        setToken(token)
-        try { await loadProfile() } catch { /* ignore load errors */ }
+        localStorage.setItem('token', token);
+        setUser(user);
         reset();
         navigate("/home");
       }

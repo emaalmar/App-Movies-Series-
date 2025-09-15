@@ -2,12 +2,19 @@ import { useEffect, useState } from "react"
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useProfileContext } from "../contexts/ProfileContext";
+import { InputForm } from "../components/InputForm.jsx"
+import { AlertError } from "../components/AlertError.jsx"
+import { AlertSuccess } from "../components/AlertSuccess.jsx"
+import { Button } from "../components/Button.jsx"
+import { useAuth } from "../contexts/AuthContext"
+
 // Esquema de validación con Zod para perfil
 const profileSchema = z.object({
     fullName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
     email: z.string().email('Correo electrónico inválido'),
 })
-// Esquema de validación con Zod para cambio de contraseña (igual que SignUp)
+
 const passwordSchema = z.object({
     currentPassword: z.string().min(1, 'La contraseña actual no puede estar vacía'),
     newPassword: z.string()
@@ -16,22 +23,16 @@ const passwordSchema = z.object({
         .regex(/[A-Z]/, 'La contraseña debe contener al menos una letra mayúscula')
         .regex(/[0-9]/, 'La contraseña debe contener al menos un número'),
 })
-import { useProfile } from "../hooks/useProfileHook"
-import { InputForm } from "../components/InputForm.jsx"
-import { AlertError } from "../components/AlertError.jsx"
-import { AlertSuccess } from "../components/AlertSuccess.jsx"
-import { Button } from "../components/Button.jsx"
-
-
 
 
 export const ProfilePage = () => {
-    const { profile, updateProfile, updatePassword, load } = useProfile()
+    const { user, loading } = useAuth();
+    const { profile, updateProfile, changePassword, loading: profileLoading } = useProfileContext();
     const [editing, setEditing] = useState(false)
     const [saving, setSaving] = useState(false)
     const [successMsg, setSuccessMsg] = useState('')
-    const [profileError, setProfileError] = useState('')
     const [pwError, setPwError] = useState('')
+    const [profileError, setProfileError] = useState(""); // Estado para el error de perfil
 
     // Formulario de perfil
     const { register: registerProfile, handleSubmit: handleSubmitProfile, formState: { errors: errorsProfile }, reset: resetProfile } = useForm({
@@ -67,15 +68,16 @@ export const ProfilePage = () => {
 
     const onSaveProfile = async (data) => {
         setSaving(true)
-        setProfileError('')
+        setProfileError("");
         try {
             await updateProfile({ fullName: data.fullName, email: data.email })
             setSuccessMsg('Perfil actualizado')
             setEditing(false)
-            await load()
+            setPwError("");
         } catch (err) {
             const msg = err?.response?.data?.message || err?.message || 'Error al actualizar perfil'
-            setProfileError(msg)
+            setPwError("");
+            setProfileError(msg);
         } finally {
             setSaving(false)
         }
@@ -84,13 +86,17 @@ export const ProfilePage = () => {
     const onChangePassword = async (data) => {
         setPwError('')
         try {
-            await updatePassword(data.currentPassword, data.newPassword)
+            await changePassword(data.currentPassword, data.newPassword)
             setSuccessMsg('Contraseña actualizada')
             resetPw()
         } catch (err) {
-            setPwError(err?.response?.data?.message || err?.message || 'Error al cambiar contraseña')
+            const msg = err?.response?.data?.message || err?.message || 'Error al cambiar contraseña';
+            setPwError(msg);
         }
     }
+
+    if (loading || profileLoading) return <div className="text-center mt-10">Cargando...</div>;
+    if (!user) return <div className="text-center mt-10">No autenticado</div>;
 
     return (
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -107,6 +113,7 @@ export const ProfilePage = () => {
                     <div className="flex justify-center items-center mb-4 space-x-4">
                         <h2 className="text-lg font-semibold">Información</h2>
                     </div>
+                    {profileError && <AlertError message={profileError} />}
                     <InputForm
                         fieldName="fullName"
                         displayLabel="Nombre"
@@ -138,7 +145,6 @@ export const ProfilePage = () => {
                         <p className="text-xs text-red-600 mt-1">{errorsProfile.email.message}</p>
                     ) : null}
 
-                    {profileError && <AlertError message={profileError} />}
                     {successMsg && <AlertSuccess title="Éxito" text={successMsg} onClose={() => setSuccessMsg('')} />}
 
                     {!editing ? (

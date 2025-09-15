@@ -1,9 +1,12 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useUserStore } from '../store/userStore';
+import { useAuth } from '../contexts/AuthContext';
 
 function ProtectedRoute({ children, redirectTo = '/' }) {
-    const token = useUserStore(state => state.token);
-    const isAuthenticated = !!token;
+    const { user, loading } = useAuth();
+
+    if (loading) return null; // o un spinner si prefieres
+
+    const isAuthenticated = !!user;
 
     if (!isAuthenticated) {
         return <Navigate to={redirectTo} />;
