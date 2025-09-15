@@ -2,11 +2,11 @@ import { AuthProvider } from './contexts/AuthContext.jsx'
 import { AppRoutes } from './routes/routes'
 import { ProfileProvider } from './contexts/ProfileContext'
 
-function App() {
+function App () {
   return (
     <AuthProvider>
       <ProfileProvider>
-        <div className="">
+        <div className=''>
           <AppRoutes />
         </div>
       </ProfileProvider>

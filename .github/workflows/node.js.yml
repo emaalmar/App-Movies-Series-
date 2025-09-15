@@ -15,8 +15,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5.0.0
-    - uses: actions/setup-node@v5.0.0
-      with:
-        node-version: 22
-    - run: npm ci
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v5.0.0
+        with:
+          node-version: 22
+
+      - name: Instalar dependencias backend
+        run: npm ci
+        working-directory: backend
+
+      - name: Instalar dependencias frontend
+        run: npm ci
+        working-directory: frontend
+      - run: npm lint
+      - run: npm run build
