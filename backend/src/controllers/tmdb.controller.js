@@ -34,7 +34,7 @@ async function tmdbFetch(path, params = {}) {
         const r = await fetch(urlStr, { headers })
         const txt = await r.text()
         let j = null
-        try { j = JSON.parse(txt) } catch (e) { /* allow raw text */ }
+        try { j = JSON.parse(txt) } catch { /* allow raw text */ }
         return { res: r, text: txt, json: j }
     }
 
