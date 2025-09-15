@@ -1,21 +1,21 @@
 import { api } from '../services/api'
 
-export async function signup(data) {
+export async function signup (data) {
   const res = await api.post('/auth/signup', data)
   return res.data
 }
 
-export async function signin(data) {
+export async function signin (data) {
   const res = await api.post('/auth/signin', data)
   return res.data
 }
 
-export async function logout() {
+export async function logout () {
   const res = await api.post('/auth/logout')
   return res.data
 }
 
-export async function profile() {
+export async function profile () {
   const res = await api.get('/auth/profile')
   return res.data
 }
