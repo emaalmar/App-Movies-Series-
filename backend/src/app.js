@@ -39,16 +39,22 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: 'Something went wrong!' });
 });
 
-const startServer = async () => {
-    try {
-        await connectDB();
-        app.listen(CONFIG.PORT, () => {
-            console.log(`Server is running on port ${CONFIG.PORT}`);
-        });
-    } catch (err) {
-        console.error("Failed to connect to the database:", err.message);
-        process.exit(1); // Exit the process if DB connection fails
-    }
-};
+// Export the app for serverless platforms (top-level export)
+export default app;
 
-startServer();
+// When running locally (not on Vercel) start DB connection and HTTP server
+if (!process.env.VERCEL) {
+    const startServer = async () => {
+        try {
+            await connectDB();
+            app.listen(CONFIG.PORT, () => {
+                console.log(`Server is running on port ${CONFIG.PORT}`);
+            });
+        } catch (err) {
+            console.error("Failed to connect to the database:", err.message);
+            process.exit(1); // Exit the process if DB connection fails
+        }
+    };
+
+    startServer();
+}
