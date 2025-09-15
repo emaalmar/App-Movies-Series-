@@ -14,11 +14,39 @@ const limiter = rateLimit({
 const allowedOrigins = CONFIG.CORS_ORIGIN.split(',').map(origin => origin.trim());
 const corsOptions = {
     origin: function (origin, callback) {
-        // Permitir peticiones sin origen (como Postman) o si el origen está en la lista
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
+        // Diagnostic logging for CORS decisions
+        try {
+            if (!origin) {
+                console.log('[CORS] origin=null -> allow (no origin, e.g., Postman)');
+                callback(null, true);
+                return;
+            }
+
+            const lower = String(origin).toLowerCase();
+            if (allowedOrigins.includes(origin)) {
+                console.log(`[CORS] origin=${origin} -> allow (matched allowedOrigins)`);
+                callback(null, true);
+                return;
+            }
+
+            if (lower.endsWith('.vercel.app')) {
+                console.log(`[CORS] origin=${origin} -> allow (vercel preview)`);
+                callback(null, true);
+                return;
+            }
+
+            console.log(`[CORS] origin=${origin} -> deny`);
+            // Do not throw an error here — return false so CORS will
+            // simply not set CORS headers for disallowed origins. If we
+            // throw an Error the global error handler turns it into a 500.
+            callback(null, false);
+            return;
+        } catch (err) {
+            // Log unexpected errors in the CORS origin check
+            console.error('[CORS] error while validating origin:', err && err.message ? err.message : err);
+            // Deny on error but don't throw
+            callback(null, false);
+            return;
         }
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
