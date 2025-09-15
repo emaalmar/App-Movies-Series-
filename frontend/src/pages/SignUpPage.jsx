@@ -6,11 +6,10 @@ import { TvIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { AlertSuccess } from '../components/AlertSuccess.jsx'
 import { signup } from '../api/auth.js'
-import { useProfile } from '../hooks/useProfileHook'
-import { useUserStore } from '../store/userStore.js'
 import { InputForm } from '../components/InputForm.jsx'
 import { AlertError } from '../components/AlertError.jsx'
 import { Button } from '../components/Button.jsx'
+import { useAuth } from '../contexts/AuthContext'
 
 
 const signUpSchema = z.object({
@@ -29,8 +28,7 @@ export const SignUpPage = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const setToken = useUserStore(state => state.setToken);
-  const { load: loadProfile } = useProfile();
+  const { setUser } = useAuth();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     resolver: zodResolver(signUpSchema),
@@ -41,10 +39,10 @@ export const SignUpPage = () => {
     setErrorMsg("");
     try {
       setLoading(true);
-      const { token } = await signup(data);
+      const { token, user } = await signup(data);
       if (token) {
-        setToken(token)
-        try { await loadProfile() } catch { /* ignore profile load errors */ }
+        localStorage.setItem('token', token);
+        if (user) setUser(user);
       }
       setShowAlert(true);
       navigate('/home');

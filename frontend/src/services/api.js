@@ -8,7 +8,6 @@ export const api = axios.create({
   // withCredentials: true
 })
 
-// Request interceptor: add Authorization header from localStorage
 api.interceptors.request.use(
   (config) => {
     try {
@@ -25,7 +24,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
-// Response interceptor: on 401 clear token (NO redirect)
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -33,7 +32,7 @@ api.interceptors.response.use(
     if (status === 401) {
       try {
         localStorage.removeItem('token')
-        // NO redirect, just clear token so frontend can handle error
+
       } catch {
         // noop
       }

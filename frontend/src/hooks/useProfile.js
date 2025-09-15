@@ -1,18 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { profile as fetchProfile } from '../api/auth'
 import * as usersAPI from '../api/users'
-import { useUserStore } from '../store/userStore'
 
 const ProfileContext = createContext(null)
 
 export const ProfileProvider = ({ children }) => {
-  const token = useUserStore(state => state.token)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
   const load = useCallback(async () => {
-    if (!token) return
     setLoading(true)
     setError(null)
     try {
@@ -27,16 +24,11 @@ export const ProfileProvider = ({ children }) => {
     } finally {
       setLoading(false)
     }
-  }, [token])
+  }, [])
 
   useEffect(() => {
-    if (token) {
-      load()
-    } else {
-      setProfile(null)
-      setError(null)
-    }
-  }, [token, load])
+    load()
+  }, [load])
 
   const updateProfile = async (data) => {
     setLoading(true)
