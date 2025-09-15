@@ -24,8 +24,9 @@ jobs:
         run: npm ci
         working-directory: backend
 
-      - name: Instalar dependencias frontend
-        run: npm ci
-        working-directory: frontend
-      - run: npm lint
-      - run: npm run build
+      - name: Instalar, Lint y Build del Frontend
+        run: |
+          npm ci
+          npm run lint
+          npm run build
+        working-directory: fronten
