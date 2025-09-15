@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout código
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
 
-    - name: "Github action ejecutando..."
-      run: echo "Github action ejecutando..."
+      - name: "Github action ejecutando..."
+        run: echo "Github action ejecutando..."
