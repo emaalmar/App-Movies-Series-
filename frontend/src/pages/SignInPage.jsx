@@ -1,4 +1,12 @@
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+// Esquema de validación con Zod para login
+const signInSchema = z.object({
+  email: z.string().email('Correo electrónico inválido'),
+  password: z.string('La contraseña no puede estar vacia'),
+})
 import { TvIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { signin } from '../api/auth.js'
@@ -10,33 +18,28 @@ import { Button } from '../components/Button.jsx';
 
 
 export const SignInPage = () => {
-
-  const [formData, setFormData] = useState({ email: '', password: '' });
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrorMsg("");
-  };
-
   const setToken = useUserStore(state => state.setToken);
   const { load: loadProfile } = useProfile();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-  setLoading(true);
-  setErrorMsg("");
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    resolver: zodResolver(signInSchema),
+    defaultValues: { email: '', password: '' }
+  });
 
-  const { token } = await signin(formData);
+  const onSubmit = async (data) => {
+    setErrorMsg("");
+    try {
+      setLoading(true);
+      const { token } = await signin(data);
       if (token) {
         setToken(token)
-  try { await loadProfile() } catch { /* ignore load errors */ }
+        try { await loadProfile() } catch { /* ignore load errors */ }
+        reset();
+        navigate("/home");
       }
-      setFormData({ email: '', password: '' });
-      navigate("/home");
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message || 'Error desconocido';
       setErrorMsg(msg);
@@ -56,7 +59,8 @@ export const SignInPage = () => {
         </div>
 
         <div className="mt-10 text-left sm:mx-auto sm:w-full sm:max-w-sm">
-          <form id="sign-in-form" onSubmit={handleSubmit} className="space-y-5">
+
+          <form id="sign-in-form" noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
               <div>
                 <InputForm
@@ -64,11 +68,17 @@ export const SignInPage = () => {
                   displayLabel="Email address"
                   inputType='email'
                   placeholder="Enter your email"
-                  handleOnChange={handleChange}
-                  value={formData.email}
+                  {...register('email')}
                   required={true}
                   autoComplete="email"
                 />
+                {errors.email && errors.email.types ? (
+                  Object.values(errors.email.types).map((msg, idx) => (
+                    <p key={idx} className="text-xs text-red-600 mt-1">{msg}</p>
+                  ))
+                ) : errors.email ? (
+                  <p className="text-xs text-red-600 mt-1">{errors.email.message}</p>
+                ) : null}
               </div>
 
               <div>
@@ -77,11 +87,17 @@ export const SignInPage = () => {
                   displayLabel="Password"
                   inputType='password'
                   placeholder="Enter your password"
-                  handleOnChange={handleChange}
-                  value={formData.password}
+                  {...register('password')}
                   required={true}
                   autoComplete="current-password"
                 />
+                {errors.password && errors.password.types ? (
+                  Object.values(errors.password.types).map((msg, idx) => (
+                    <p key={idx} className="text-xs text-red-600 mt-1">{msg}</p>
+                  ))
+                ) : errors.password ? (
+                  <p className="text-xs text-red-600 mt-1">{errors.password.message}</p>
+                ) : null}
               </div>
               {/* <div className="text-sm">
                   <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
@@ -90,11 +106,9 @@ export const SignInPage = () => {
                 </div> */}
             </div>
             <AlertError message={errorMsg} />
-            <div>
-                <Button type="submit" loading={loading} loadingText='Creating...'> Create Account </Button>
-            </div>
-
-
+      <div>
+        <Button type="submit" loading={loading} loadingText='Signing in...'> Sign In </Button>
+      </div>
           </form>
 
           <p className="mt-10 text-center text-sm/6 text-gray-500">

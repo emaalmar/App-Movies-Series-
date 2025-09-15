@@ -1,12 +1,14 @@
 import { Router } from 'express'
 import { signup, signin, logout, profile } from '../controllers/auth.controller.js'
 import { auth } from '../middleware/auth.js'
+import { profileValidator, signinValidator, signupValidator } from '../validators/auth.validator.js'
+import { handleValidator } from '../middleware/handleValidator.js'
 
 const router = Router()
-router.post('/signup', signup)
-router.post('/signin', signin)
+router.post('/signup', signupValidator, handleValidator, signup)
+router.post('/signin', signinValidator, handleValidator, signin)
 router.post('/logout', logout)
-router.get('/profile', auth, profile)
+router.get('/profile', auth, profileValidator, handleValidator, profile)
 
 /* // ---- endpoint de prueba ----
 router.get('/header', (req, res) => {

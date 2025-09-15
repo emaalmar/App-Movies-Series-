@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { TvIcon } from '@heroicons/react/24/outline'
 import { NavLink, useNavigate } from 'react-router-dom'
@@ -10,53 +12,43 @@ import { InputForm } from '../components/InputForm.jsx'
 import { AlertError } from '../components/AlertError.jsx'
 import { Button } from '../components/Button.jsx'
 
-// Esquema de validación con Zod
+
 const signUpSchema = z.object({
-  fullName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+  fullName: z.string().trim().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
   email: z.string().email('Correo electrónico inválido'),
-  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+  password: z.string()
+    .min(6, 'La contraseña debe tener al menos 6 caracteres')
+    .max(100, 'La contraseña es demasiado larga')
+    .regex(/[A-Z]/, 'La contraseña debe contener al menos una letra mayúscula')
+    .regex(/[0-9]/, 'La contraseña debe contener al menos un número'),
 })
 
 export const SignUpPage = () => {
 
   const [showAlert, setShowAlert] = useState(false);
-  const [formData, setFormData] = useState({ fullName: "", email: "", password: "" });
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
-  const [validationErrors, setValidationErrors] = useState({});
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrorMsg("");
-  };
   const setToken = useUserStore(state => state.setToken);
   const { load: loadProfile } = useProfile();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setValidationErrors({});
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: { fullName: '', email: '', password: '' }
+  });
+
+  const onSubmit = async (data) => {
     setErrorMsg("");
-    // Validación con Zod
-    const result = signUpSchema.safeParse(formData);
-    if (!result.success) {
-      // Mapear errores de Zod
-      const fieldErrors = {};
-      result.error.errors.forEach(err => {
-        fieldErrors[err.path[0]] = err.message;
-      });
-      setValidationErrors(fieldErrors);
-      return;
-    }
     try {
       setLoading(true);
-      const { token } = await signup(formData);
+      const { token } = await signup(data);
       if (token) {
         setToken(token)
         try { await loadProfile() } catch { /* ignore profile load errors */ }
       }
       setShowAlert(true);
       navigate('/home');
+      reset();
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message || 'Error desconocido';
       setErrorMsg(msg);
@@ -84,7 +76,7 @@ export const SignUpPage = () => {
         </div>
 
         <div className="mt-10 text-left sm:mx-auto sm:w-full sm:max-w-sm">
-          <form id="sign-up-form" onSubmit={handleSubmit} className="space-y-5">
+          <form id="sign-up-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="">
               <InputForm
                 fieldName="fullName"
@@ -92,14 +84,16 @@ export const SignUpPage = () => {
                 inputType='text'
                 required={true}
                 placeholder="Enter your name"
-                handleOnChange={handleChange}
-                value={formData.fullName}
+                {...register('fullName')}
                 autoComplete="name"
               />
-              {validationErrors.fullName && (
-                <p className="text-xs text-red-600 mt-1">{validationErrors.fullName}</p>
-              )}
-
+              {errors.fullName && errors.fullName.types ? (
+                Object.values(errors.fullName.types).map((msg, idx) => (
+                  <p key={idx} className="text-xs text-red-600 mt-1">{msg}</p>
+                ))
+              ) : errors.fullName ? (
+                <p className="text-xs text-red-600 mt-1">{errors.fullName.message}</p>
+              ) : null}
 
               <div>
                 <InputForm
@@ -107,14 +101,17 @@ export const SignUpPage = () => {
                   displayLabel="Email"
                   inputType='email'
                   placeholder="Enter your email"
-                  handleOnChange={handleChange}
-                  value={formData.email}
+                  {...register('email')}
                   required={true}
                   autoComplete="email"
                 />
-                {validationErrors.email && (
-                  <p className="text-xs text-red-600 mt-1">{validationErrors.email}</p>
-                )}
+                {errors.email && errors.email.types ? (
+                  Object.values(errors.email.types).map((msg, idx) => (
+                    <p key={idx} className="text-xs text-red-600 mt-1">{msg}</p>
+                  ))
+                ) : errors.email ? (
+                  <p className="text-xs text-red-600 mt-1">{errors.email.message}</p>
+                ) : null}
               </div>
 
               <div>
@@ -123,20 +120,18 @@ export const SignUpPage = () => {
                   displayLabel="Password"
                   inputType='password'
                   placeholder="Enter your password"
-                  handleOnChange={handleChange}
-                  value={formData.password}
+                  {...register('password')}
                   required={true}
                   autoComplete="new-password"
                 />
-                {validationErrors.password && (
-                  <p className="text-xs text-red-600 mt-1">{validationErrors.password}</p>
-                )}
+                {errors.password && errors.password.types ? (
+                  Object.values(errors.password.types).map((msg, idx) => (
+                    <p key={idx} className="text-xs text-red-600 mt-1">{msg}</p>
+                  ))
+                ) : errors.password ? (
+                  <p className="text-xs text-red-600 mt-1">{errors.password.message}</p>
+                ) : null}
               </div>
-              {/* <div className="mt-2 text-xs text-left">
-                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                  Forgot password?
-                </a>
-              </div> */}
             </div>
 
             {errorMsg && <AlertError message={errorMsg} />}

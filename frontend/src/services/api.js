@@ -25,7 +25,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
-// Response interceptor: on 401 clear token and redirect to signin
+// Response interceptor: on 401 clear token (NO redirect)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -33,10 +33,7 @@ api.interceptors.response.use(
     if (status === 401) {
       try {
         localStorage.removeItem('token')
-        if (typeof window !== 'undefined') {
-          // redirect to signin page
-          window.location.href = '/signin'
-        }
+        // NO redirect, just clear token so frontend can handle error
       } catch {
         // noop
       }
