@@ -59,3 +59,12 @@ if (!process.env.VERCEL) {
 
     startServer();
 }
+
+// If running on Vercel (serverless) initiate a DB connection at module load
+// so handlers can use mongoose during cold starts. We don't call app.listen
+// because Vercel provides the HTTP server.
+if (process.env.VERCEL) {
+    connectDB()
+        .then(() => console.log('MongoDB connected (vercel)'))
+        .catch(err => console.error('MongoDB connection error (vercel):', err));
+}
