@@ -25,7 +25,6 @@ if (!CONFIG.MONGODB_URI || !CONFIG.SECRET_KEY) {
 securityMiddleware.forEach(middleware => app.use(middleware));
 
 // Rutas
-app.get('/favicon.ico', (req, res) => res.status(204).send());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use('/api/tmdb', tmdbRoutes)
