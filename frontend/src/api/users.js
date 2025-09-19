@@ -3,11 +3,11 @@ import { profile as fetchProfile } from './auth'
 
 // Simple in-memory cache for current user id to avoid repeated /auth/profile calls
 let cachedUserId = null
-export function clearCachedUserId() {
+export function clearCachedUserId () {
   cachedUserId = null
 }
 
-async function getCurrentUserId() {
+async function getCurrentUserId () {
   if (cachedUserId) return cachedUserId
   const res = await fetchProfile()
   const user = res.user || res.data?.user || res
@@ -17,7 +17,7 @@ async function getCurrentUserId() {
   return id
 }
 
-export async function updateMe(data) {
+export async function updateMe (data) {
   const id = await getCurrentUserId()
   const res = await api.put(`/users/${id}`, data)
   // update cache if server returns updated user
@@ -25,13 +25,13 @@ export async function updateMe(data) {
   return res.data
 }
 
-export async function updatePassword(currentPassword, newPassword) {
+export async function updatePassword (currentPassword, newPassword) {
   const id = await getCurrentUserId()
   const res = await api.put(`/users/${id}/password`, { currentPassword, newPassword })
   return res.data
 }
 
-export async function deleteMe() {
+export async function deleteMe () {
   const id = await getCurrentUserId()
   const res = await api.delete(`/users/${id}`)
   clearCachedUserId()

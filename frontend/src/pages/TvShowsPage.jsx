@@ -1,19 +1,17 @@
-import { MediaCarousel } from "../components/MediaCarousel"
+import { MediaCarousel } from '../components/MediaCarousel'
 export const TvShowsPage = () => {
-    return (
-        <>
+  return (
+    <>
 
-            <MediaCarousel
-                name="Series Populares de Hoy"
-                apiUrl="/trending/tv/day"
-            />
+      <MediaCarousel
+        name='Series Populares de Hoy'
+        apiUrl='/trending/tv/day'
+      />
 
-
-
-            <MediaCarousel
-                name="Series populares de la Semana"
-                apiUrl="/trending/tv/week"
-            />
-        </>
-    )
+      <MediaCarousel
+        name='Series populares de la Semana'
+        apiUrl='/trending/tv/week'
+      />
+    </>
+  )
 }
